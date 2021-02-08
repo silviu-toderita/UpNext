@@ -17,7 +17,7 @@ public class TaskListTest {
     @Before
     public void setUp(){
         taskList = new TaskList();
-        Date testDate = new Date(2020,03,23);
+        Date testDate = new Date(2020,3,23);
         testTaskA = new Task("Groceries", testDate, 3);
         testTaskB = new Task("Volunteering", testDate, 2);
         testTaskC = new Task("CPSC 210 Project", testDate, 5);
@@ -94,9 +94,8 @@ public class TaskListTest {
 
         taskList.complete(2);
         taskList.complete(0);
-        taskList.complete(1);
+        taskList.complete(0);
         assertEquals(0, taskList.size());
-        assertEquals(testTaskB, taskList.get(0));
     }
 
     @Test
@@ -158,7 +157,7 @@ public class TaskListTest {
         taskList.add(testTaskA);
         taskList.add(testTaskC);
         taskList.add(testTaskB);
-        assertEquals(1, taskList.find("Volunteering"));
+        assertEquals(2, taskList.find("Volunteering"));
     }
 
     @Test

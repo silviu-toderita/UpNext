@@ -63,15 +63,15 @@ public class Task {
 
     // Getter Methods:
     public String getName() {
-        return name; // Stub
+        return name;
     }
 
     public Date getDueDate() {
-        return dueDate; // Stub
+        return dueDate;
     }
 
     public int getWeight() {
-        return weight; // Stub
+        return weight;
     }
 
 }
