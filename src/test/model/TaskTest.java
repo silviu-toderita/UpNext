@@ -25,7 +25,7 @@ public class TaskTest {
         task = new Task("Groceries");
         assertEquals("Groceries", task.getName());
         assertNull(task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
     }
 
     @Test
@@ -33,7 +33,7 @@ public class TaskTest {
         task = new Task("Groceries", testDateA);
         assertEquals("Groceries", task.getName());
         assertEquals(testDateA, task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
     }
 
     @Test
@@ -57,12 +57,12 @@ public class TaskTest {
         task = new Task("Groceries");
         assertEquals("Groceries", task.getName());
         assertNull(task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
 
         task.setName("Volunteering");
         assertEquals("Volunteering", task.getName());
         assertNull(task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
     }
 
     @Test
@@ -70,12 +70,12 @@ public class TaskTest {
         task = new Task("Groceries");
         assertEquals("Groceries", task.getName());
         assertNull(task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
 
         task.setDueDate(testDateA);
         assertEquals("Groceries", task.getName());
         assertEquals(testDateA, task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
     }
 
     @Test
@@ -83,12 +83,12 @@ public class TaskTest {
         task = new Task("Groceries", testDateA);
         assertEquals("Groceries", task.getName());
         assertEquals(testDateA, task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
 
         task.setDueDate(testDateB);
         assertEquals("Groceries", task.getName());
         assertEquals(testDateB, task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class TaskTest {
         task = new Task("Groceries");
         assertEquals("Groceries", task.getName());
         assertNull(task.getDueDate());
-        assertNull(task.getWeight());
+        assertEquals(0, task.getWeight());
 
         task.setWeight(4);
         assertEquals("Groceries", task.getName());
