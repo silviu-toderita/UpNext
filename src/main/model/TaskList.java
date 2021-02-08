@@ -6,7 +6,7 @@ import java.util.List;
 
 // Represents a list of Tasks
 public class TaskList {
-    List<Task> taskList;
+    private List<Task> taskList;
 
     // EFFECT: Create a new list of tasks
     public TaskList() {
