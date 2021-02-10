@@ -1,9 +1,12 @@
 package model;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 // Represents a task with a name, due date, and weight
 public class Task {
+    private static final int DEFAULT_WEIGHT = 3;
 
     private String name;
     private Date dueDate;
@@ -13,7 +16,8 @@ public class Task {
     // EFFECTS: Creates a task with a name, no due date, and no weight
     public Task(String name) {
         this.name = name;
-        this.weight = 0;
+        this.dueDate = new Date(0);
+        this.weight = DEFAULT_WEIGHT;
     }
 
     // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character
@@ -21,7 +25,7 @@ public class Task {
     public Task(String name, Date dueDate) {
         this.name = name;
         this.dueDate = dueDate;
-        this.weight = 0;
+        this.weight = DEFAULT_WEIGHT;
     }
 
     // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character,
@@ -29,6 +33,7 @@ public class Task {
     // EFFECTS: Creates a task with a name, a weight, and no due date
     public Task(String name, int weight) {
         this.name = name;
+        this.dueDate = new Date(0);
         this.weight = weight;
     }
 
@@ -61,15 +66,29 @@ public class Task {
         this.weight = weight;
     }
 
-    // Getter Methods:
+    // EFFECTS: Returns this task's name
     public String getName() {
         return name;
     }
 
+    // EFFECTS: Returns this task's due date as a raw date
     public Date getDueDate() {
         return dueDate;
     }
 
+    // EFFECTS: Returns this task's due date as a formatted string
+    public String getDueDateString() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dueDate);
+        if (cal.get(Calendar.YEAR) == 1969) {
+            return "NO DUE DATE";
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy");
+        return sdf.format(cal.getTime());
+    }
+
+    // EFFECTS: Returns this task's weight
     public int getWeight() {
         return weight;
     }
