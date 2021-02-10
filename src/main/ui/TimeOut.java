@@ -11,58 +11,46 @@ public class TimeOut {
     private static final String COMPLETE_COMMAND = "complete";
     private static final String MODIFY_COMMAND = "modify";
     private static final String QUIT_COMMAND = "quit";
+    private static final TaskList TASK_LIST = new TaskList();
+    private static final Scanner INPUT = new Scanner(System.in);
 
-    private TaskList taskList;
-    private Scanner input;
-
-    // EFFECTS: Initializes the UI by generating a task list, scanner, adding some sample tasks and starting the UI loop
+    // EFFECTS: Initializes the UI by adding some sample tasks and starting the UI loop
     public TimeOut() {
-        taskList = new TaskList();
-        input = new Scanner(System.in);
-
         addSampleTasks();
-
         runUILoop();
     }
 
     // EFFECTS: Adds some sample tasks to the task list for demonstration
     public void addSampleTasks() {
-        Task sampleTaskA = new Task("CPSC210 Project Phase 2", new Date(121,2,7), 3);
-        Task sampleTaskB = new Task("CPEN311 Lab 3", new Date(121,1,28),4);
-        Task sampleTaskC = new Task("CPSC121 Assignment 2", new Date(121,1,25));
-        taskList.add(sampleTaskA);
-        taskList.add(sampleTaskB);
-        taskList.add(sampleTaskC);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2021,Calendar.MARCH,7);
+        Task sampleTaskA = new Task("CPSC210 Project Phase 2", cal.getTime(), 3);
+        cal.set(2021,Calendar.FEBRUARY,28);
+        Task sampleTaskB = new Task("CPEN311 Lab 3", cal.getTime(),4);
+        cal.set(2021,Calendar.FEBRUARY,25);
+        Task sampleTaskC = new Task("CPSC121 Assignment 2", cal.getTime());
+        TASK_LIST.add(sampleTaskA);
+        TASK_LIST.add(sampleTaskB);
+        TASK_LIST.add(sampleTaskC);
     }
 
     // EFFECTS: Runs a loop to generate the UI and capture user input
     private void runUILoop() {
-        TaskVisualizer taskVisualizer = new TaskVisualizer(taskList);
+        TaskVisualizer taskVisualizer = new TaskVisualizer(TASK_LIST);
 
         System.out.println(taskVisualizer.allTasks());
 
         while (true) {
             System.out.println(formatCommands());
 
-            String command = processInput(input.nextLine());
+            String command = processInput(INPUT.nextLine());
             if (command.equals(QUIT_COMMAND)) {
                 System.out.println(randomGoodbye());
                 break;
             } else {
-                if (command.equals(NEW_COMMAND)) {
-                    addTask();
-                } else if (command.equals(COMPLETE_COMMAND)) {
-                    if (taskList.size() > 0) {
-                        completeTask();
-                    }
-                } else if (command.equals(MODIFY_COMMAND)) {
-                    if (taskList.size() > 0) {
-                        modifyTask();
-                    }
-                } else {
-                    System.out.println("Sorry, I didn't recognize that command!");
+                if (processCommand(command)) {
+                    System.out.println(taskVisualizer.allTasks());
                 }
-                System.out.println(taskVisualizer.allTasks());
             }
 
         }
@@ -78,7 +66,7 @@ public class TimeOut {
         return commands;
     }
 
-    // EFFECTS: Returns a command formatted as "[C]ommand"
+    // EFFECTS: Returns a command formatted as "[c]ommand"
     private String formatCommand(String command) {
         String formattedCommand = "[";
         formattedCommand = formattedCommand.concat(command.substring(0,1));
@@ -107,22 +95,50 @@ public class TimeOut {
     }
 
     // MODIFIES: this
+    // EFFECTS: Process the command and return true if it's a valid command
+    private boolean processCommand(String command) {
+        switch (command) {
+            case NEW_COMMAND:
+                addTask();
+                break;
+            case COMPLETE_COMMAND:
+                if (TASK_LIST.size() > 0) {
+                    completeTask();
+                }
+                break;
+            case MODIFY_COMMAND:
+                if (TASK_LIST.size() > 0) {
+                    modifyTask();
+                }
+                break;
+            default:
+                System.out.println("Sorry, I didn't recognize that command!");
+                return false;
+        }
+        return true;
+    }
+
+    // MODIFIES: this
     // EFFECTS: Captures user input to create a new task
     private void addTask() {
-        System.out.println("Please enter the name of the new task: ");
-        String name = input.nextLine();
+        String name;
 
-        Date date = addTaskDate();
-        int weight = addTaskWeight();
-
-        Task task;
-        if (date.equals(0)) {
-            task = new Task(name,weight);
-        } else {
-            task = new Task(name,date,weight);
+        while (true) {
+            System.out.println("Please enter the name of the new task: ");
+            name = INPUT.nextLine();
+            if (name.length() > 0) {
+                break;
+            } else {
+                System.out.println("The name of the task can't be empty!");
+            }
         }
 
-        taskList.add(task);
+        Task task = new Task(name);
+
+        addDate(task);
+        addWeight(task);
+
+        TASK_LIST.add(task);
         System.out.print(name);
         System.out.println(" has been added to TimeOut, get to work!");
     }
@@ -131,18 +147,18 @@ public class TimeOut {
     // EFFECTS: Captures user input to complete a task
     private void completeTask() {
         System.out.print("Please enter the task number you would like to complete [1");
-        int size = taskList.size();
+        int size = TASK_LIST.size();
         if (size > 1) {
             System.out.print("-");
             System.out.print(size);
         }
         System.out.println("] or press enter to cancel: ");
-        String command = input.nextLine();
+        String command = INPUT.nextLine();
         try {
             if (command.length() > 0) {
                 int taskNum = Integer.parseInt(command) - 1;
-                String name = taskList.get(taskNum).getName();
-                taskList.complete(taskNum);
+                String name = TASK_LIST.get(taskNum).getName();
+                TASK_LIST.complete(taskNum);
                 System.out.print("The following task has been marked as completed: ");
                 System.out.print(name);
                 System.out.println(" - Great work!");
@@ -157,19 +173,19 @@ public class TimeOut {
     // EFFECTS: Captures user input to modify a task
     private void modifyTask() {
         System.out.print("Please enter the task number you would like to modify [1");
-        int size = taskList.size();
+        int size = TASK_LIST.size();
         if (size > 1) {
             System.out.print("-");
             System.out.print(size);
         }
         System.out.println("] or press enter to cancel: ");
-        String command = input.nextLine();
+        String command = INPUT.nextLine();
         try {
             if (command.length() > 0) {
                 int taskNum = Integer.parseInt(command) - 1;
-                Task task = taskList.get(taskNum);
+                Task task = TASK_LIST.get(taskNum);
                 modifyName(task);
-                modifyDueDate(task);
+                modifyDate(task);
                 modifyWeight(task);
                 System.out.println("Task successfully updated!");
             }
@@ -184,7 +200,7 @@ public class TimeOut {
         System.out.print("You've selected to modify: ");
         System.out.print(task.getName());
         System.out.println(" - Please enter a new name (or press enter to keep the current name): ");
-        String nameInput = input.nextLine();
+        String nameInput = INPUT.nextLine();
         if (nameInput.length() > 0) {
             task.setName(nameInput);
             System.out.print("Name updated to: ");
@@ -193,110 +209,108 @@ public class TimeOut {
     }
 
     // MODIFIES: task
-    // EFFECTS: Captures user input to modify a task due date
-    private void modifyDueDate(Task task) {
+    // EFFECTS: Captures user input to modify a due date for a task
+    private void modifyDate(Task task) {
         System.out.print("The due date for the selected task is: ");
-        System.out.print(task.getDueDateString());
-        System.out.print(" - Please enter a new due date as DD, DD-MM, or DD-MM-YYYY ");
-        System.out.println("(or press enter to keep the current date): ");
-        String dateInput = input.nextLine();
+        System.out.println(task.getDueDateString());
+        while (true) {
+            System.out.print("Please enter a new due date as DD, DD-MM, or DD-MM-YYYY ");
+            System.out.println("(or press enter to keep the current date): ");
+            if (captureDate(task)) {
+                System.out.print("Due date updated to: ");
+                System.out.println(task.getDueDateString());
+                break;
+            }
+        }
+    }
+
+    // MODIFIES: task
+    // EFFECTS: Captures user input to get a due date for a new task
+    private void addDate(Task task) {
+        do {
+            System.out.print("Please enter a date for the new task as DD, DD-MM, or DD-MM-YYYY ");
+            System.out.println("(or press enter to skip): ");
+        } while (!captureDate(task));
+
+    }
+
+    // MODIFIES: task
+    // EFFECTS: Captures user input for due date, returns true if it was successful
+    private boolean captureDate(Task task) {
+        String dateInput = INPUT.nextLine();
         if (dateInput.length() > 0) {
             try {
                 task.setDueDate(parseDate(dateInput));
-                System.out.print("Due date updated to: ");
-                System.out.println(task.getDueDateString());
+                return true;
             } catch (Exception e) {
-                System.out.println("Date format invalid, keeping current date!");
+                System.out.println("Date format invalid!");
+                return false;
             }
         }
+        return true;
+    }
+
+    // EFFECTS: Parses an input string to generate a valid date
+    private Date parseDate(String input) {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day;
+
+        if (input.length() <= 2) {
+            day = Integer.parseInt(input);
+        } else if (input.length() <= 5) {
+            int hyphenPosition = input.indexOf('-');
+            day = Integer.parseInt(input.substring(0,hyphenPosition));
+            month = Integer.parseInt(input.substring(hyphenPosition + 1)) - 1;
+        } else {
+            int firstHyphenPosition = input.indexOf('-');
+            int secondHyphenPosition = input.lastIndexOf('-');
+            day = Integer.parseInt(input.substring(0,firstHyphenPosition));
+            month = Integer.parseInt(input.substring(firstHyphenPosition + 1, secondHyphenPosition)) - 1;
+            year = Integer.parseInt(input.substring(secondHyphenPosition + 1));
+        }
+        cal.set(year, month, day);
+        return cal.getTime();
     }
 
     // MODIFIES: task
     // EFFECTS: Captures user input to modify a task weight
     private void modifyWeight(Task task) {
         System.out.print("The importance of the selected task is: ");
-        System.out.print(task.getWeight());
-        System.out.print(" - Please enter a new importance for this task from 1-5 ");
-        System.out.println("(or press enter to keep current importance): ");
-        String weightInput = input.nextLine();
+        System.out.println(task.getWeight());
+        while (true) {
+            System.out.print("Please enter a new importance for this task from 1-5 ");
+            System.out.println("(or press enter to keep current importance): ");
+            if (captureWeight(task)) {
+                System.out.print("Importance updated to: ");
+                System.out.println(task.getWeight());
+                break;
+            }
+        }
+    }
+
+    // MODIFIES: task
+    // EFFECTS: Captures user input to add a weight to a new task
+    private void addWeight(Task task) {
+        do {
+            System.out.println("Please enter how important this task is from 1-5 (or press enter to skip): ");
+        } while (!captureWeight(task));
+    }
+
+    // MODIFIES: task
+    // EFFECTS: Captures user input for weight, returns true if it was successful
+    private boolean captureWeight(Task task) {
+        String weightInput = INPUT.nextLine();
         if (weightInput.length() > 0) {
             int weightInputInt = Integer.parseInt(weightInput);
             if (weightInputInt < 1 | weightInputInt > 5) {
-                System.out.println("Invalid importance value, keeping current importance!");
-            } else {
-                task.setWeight(weightInputInt);
-                System.out.print("Importance updated to: ");
-                System.out.println(weightInputInt);
+                System.out.println("Invalid importance value!");
+                return false;
             }
+            task.setWeight(weightInputInt);
         }
-    }
-
-    // EFFECTS: Captures user input to get a date, and returns a date
-    private Date addTaskDate() {
-        Date date = new Date(0);
-
-        while (true) {
-
-            System.out.print("Please enter a date for the new task as DD, DD-MM, or DD-MM-YYYY ");
-            System.out.println("(or press enter to skip): ");
-            String dateInput = input.nextLine();
-
-            if (dateInput.length() > 0) {
-                try {
-                    date = parseDate(dateInput);
-                    break;
-                } catch (Exception e) {
-                    System.out.println("Date format invalid!");
-                }
-            } else {
-                break;
-            }
-        }
-
-        return date;
-    }
-
-    // EFFECTS: Captures user input to get a weight, and returns a weight
-    private int addTaskWeight() {
-        int weight = 3;
-        while (true) {
-            System.out.println("Please enter how important this task is from 1-5 (or press enter to skip): ");
-            String weightInput = input.nextLine();
-            if (weightInput.length() > 0) {
-                int weightInputInt = Integer.parseInt(weightInput);
-                if (weightInputInt < 1 | weightInputInt > 5) {
-                    System.out.println("Invalid importance value!");
-                } else {
-                    weight = weightInputInt;
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        return weight;
-    }
-
-    // EFFECTS: Parses an input string to generate a valid date
-    private Date parseDate(String input) {
-        Date date = new Date(2020,02,10);
-        if (input.length() <= 2) {
-            int day = Integer.parseInt(input);
-            date = new Date(121,01,day);
-        } else if (input.length() <= 5) {
-            int hyphenPosition = input.indexOf('-');
-            int day = Integer.parseInt(input.substring(0,hyphenPosition));
-            int month = Integer.parseInt(input.substring(hyphenPosition + 1)) - 1;
-            date = new Date(121,month,day);
-        } else {
-            int firstHyphenPosition = input.indexOf('-');
-            int secondHyphenPosition = input.lastIndexOf('-');
-            int day = Integer.parseInt(input.substring(0,firstHyphenPosition));
-            int month = Integer.parseInt(input.substring(firstHyphenPosition + 1, secondHyphenPosition)) - 1;
-            int year = Integer.parseInt(input.substring(secondHyphenPosition + 1)) - 1900;
-            date = new Date(year,month,day);
-        }
-        return date;
+        return true;
     }
 
     // EFFECTS: Returns a goodbye message in one of 10 random languages

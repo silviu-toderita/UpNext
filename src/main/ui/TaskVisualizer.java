@@ -16,7 +16,7 @@ public class TaskVisualizer {
 
     public String allTasks() {
         if (taskList.size() == 0) {
-            return "You're all caught up, there's nothing to do!\n";
+            return "\nYou're all caught up, there's nothing to do!\n";
         } else {
             String output = "\nTASK LIST:\n--------------------------------\n";
             for (int i = 0; i < taskList.size(); i++) {
