@@ -15,8 +15,8 @@ public class TaskVisualizer {
         } else {
             String outputText = "";
             for (int i = 0; i < taskList.size(); i++) {
-                outputText.concat(taskList.get(i).getName());
-                outputText.concat("\n");
+                outputText = outputText.concat(taskList.get(i).getName());
+                outputText = outputText.concat("\n");
             }
             return outputText;
         }
