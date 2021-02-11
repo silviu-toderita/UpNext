@@ -12,7 +12,7 @@ import static com.diogonunes.jcolor.Attribute.*;
 public class TimeOut {
     private static final String NEW_COMMAND = "new";
     private static final String COMPLETE_COMMAND = "complete";
-    private static final String MODIFY_COMMAND = "modify";
+    private static final String EDIT_COMMAND = "edit";
     private static final String QUIT_COMMAND = "quit";
 
     private static final TaskList TASK_LIST = new TaskList();
@@ -28,14 +28,16 @@ public class TimeOut {
     public void addSampleTasks() {
         Calendar cal = Calendar.getInstance();
         cal.set(2021,Calendar.MARCH,7);
-        Task sampleTaskA = new Task("CPSC210 Project Phase 2", cal.getTime(), 3);
+        Task sampleTaskA = new Task("CPSC210 Project Phase 2", cal.getTime());
         cal.set(2021,Calendar.MARCH,1);
-        Task sampleTaskB = new Task("CPEN311 Lab 3", cal.getTime(),4);
+        Task sampleTaskB = new Task("CPEN311 Lab 3", cal.getTime());
         cal.set(2021,Calendar.FEBRUARY,25);
         Task sampleTaskC = new Task("CPSC121 Assignment 2", cal.getTime());
+        Task sampleTaskD = new Task("LEGO Battlebots Timer Project");
         TASK_LIST.add(sampleTaskA);
         TASK_LIST.add(sampleTaskB);
         TASK_LIST.add(sampleTaskC);
+        TASK_LIST.add(sampleTaskD);
     }
 
     // EFFECTS: Runs a loop to generate the UI and capture user input
@@ -70,7 +72,7 @@ public class TimeOut {
         String commands = "Please choose from one of these commands:  ";
         commands = commands.concat(formatCommand(NEW_COMMAND));
         commands = commands.concat(formatCommand(COMPLETE_COMMAND));
-        commands = commands.concat(formatCommand(MODIFY_COMMAND));
+        commands = commands.concat(formatCommand(EDIT_COMMAND));
         commands = commands.concat(formatCommand(QUIT_COMMAND));
         return colorize(commands,MAGENTA_TEXT());
     }
@@ -94,8 +96,8 @@ public class TimeOut {
             output = NEW_COMMAND;
         } else if (inputClean.equals(COMPLETE_COMMAND.substring(0,1))) {
             output = COMPLETE_COMMAND;
-        } else if (inputClean.equals(MODIFY_COMMAND.substring(0,1))) {
-            output = MODIFY_COMMAND;
+        } else if (inputClean.equals(EDIT_COMMAND.substring(0,1))) {
+            output = EDIT_COMMAND;
         } else if (inputClean.equals(QUIT_COMMAND.substring(0,1))) {
             output = QUIT_COMMAND;
         }
@@ -115,9 +117,9 @@ public class TimeOut {
                     completeTask();
                 }
                 break;
-            case MODIFY_COMMAND:
+            case EDIT_COMMAND:
                 if (TASK_LIST.size() > 0) {
-                    modifyTask();
+                    editTask();
                 }
                 break;
             default:
@@ -145,7 +147,6 @@ public class TimeOut {
         Task task = new Task(name);
 
         addDate(task);
-        addWeight(task);
 
         TASK_LIST.add(task);
         System.out.print(name);
@@ -167,7 +168,7 @@ public class TimeOut {
         try {
             if (command.length() > 0) {
                 int taskNum = Integer.parseInt(command) - 1;
-                String name = TASK_LIST.get(taskNum).getName();
+                String name = TASK_LIST.get(taskNum).getLabel();
                 TASK_LIST.complete(taskNum);
                 System.out.print(colorize("The following task has been marked as completed: ", GREEN_TEXT()));
                 System.out.print(name);
@@ -181,8 +182,8 @@ public class TimeOut {
 
     // MODIFIES: this
     // EFFECTS: Captures user input to modify a task
-    private void modifyTask() {
-        System.out.print(colorize("Please enter the task number you would like to modify [", MAGENTA_TEXT()));
+    private void editTask() {
+        System.out.print(colorize("Please enter the task number you would like to edit [", MAGENTA_TEXT()));
         System.out.print("1");
         int size = TASK_LIST.size();
         if (size > 1) {
@@ -195,9 +196,8 @@ public class TimeOut {
             if (command.length() > 0) {
                 int taskNum = Integer.parseInt(command) - 1;
                 Task task = TASK_LIST.get(taskNum);
-                modifyName(task);
-                modifyDate(task);
-                modifyWeight(task);
+                editLabel(task);
+                editDate(task);
                 System.out.println(colorize("Task successfully updated!",GREEN_TEXT()));
             }
         } catch (Exception e) {
@@ -207,22 +207,22 @@ public class TimeOut {
 
     // MODIFIES: task
     // EFFECTS: Captures user input to modify a task name
-    private void modifyName(Task task) {
-        System.out.print(colorize("You've selected to modify: ", MAGENTA_TEXT()));
-        System.out.print(task.getName());
+    private void editLabel(Task task) {
+        System.out.print(colorize("You've selected to edit: ", MAGENTA_TEXT()));
+        System.out.print(task.getLabel());
         System.out.println(colorize(" - Please enter a new name (or press enter to keep the current name): ",
                 MAGENTA_TEXT()));
-        String nameInput = INPUT.nextLine();
-        if (nameInput.length() > 0) {
-            task.setName(nameInput);
-            System.out.print(colorize("Name updated to: ", GREEN_TEXT()));
-            System.out.println(nameInput);
+        String labelInput = INPUT.nextLine();
+        if (labelInput.length() > 0) {
+            task.setLabel(labelInput);
+            System.out.print(colorize("Task name updated to: ", GREEN_TEXT()));
+            System.out.println(labelInput);
         }
     }
 
     // MODIFIES: task
     // EFFECTS: Captures user input to modify a due date for a task
-    private void modifyDate(Task task) {
+    private void editDate(Task task) {
         System.out.print(colorize("The due date for the selected task is: ", MAGENTA_TEXT()));
         System.out.println(task.getDueDateString());
         while (true) {
@@ -285,52 +285,6 @@ public class TimeOut {
         }
         cal.set(year, month, day);
         return cal.getTime();
-    }
-
-    // MODIFIES: task
-    // EFFECTS: Captures user input to modify a task weight
-    private void modifyWeight(Task task) {
-        System.out.print(colorize("The importance of the selected task is: ",MAGENTA_TEXT()));
-        System.out.println(task.getWeight());
-        while (true) {
-            System.out.print(colorize("Please enter a new importance for this task from 1-5 ",MAGENTA_TEXT()));
-            System.out.println(colorize("(or press enter to keep current importance): ",MAGENTA_TEXT()));
-            if (captureWeight(task)) {
-                System.out.print(colorize("Importance updated to: ",GREEN_TEXT()));
-                System.out.println(task.getWeight());
-                break;
-            }
-        }
-    }
-
-    // MODIFIES: task
-    // EFFECTS: Captures user input to add a weight to a new task
-    private void addWeight(Task task) {
-        do {
-            System.out.println(colorize("Please enter how important this task is from 1-5 ",MAGENTA_TEXT()));
-            System.out.println(colorize("(or press enter to skip): ",MAGENTA_TEXT()));
-        } while (!captureWeight(task));
-    }
-
-    // MODIFIES: task
-    // EFFECTS: Captures user input for weight, returns true if it was successful
-    private boolean captureWeight(Task task) {
-        String weightInput = INPUT.nextLine();
-        if (weightInput.length() > 0) {
-            try {
-                int weightInputInt = Integer.parseInt(weightInput);
-                if (weightInputInt < 1 | weightInputInt > 5) {
-                    System.out.println(colorize("Invalid importance value!",RED_TEXT()));
-                    return false;
-                }
-                task.setWeight(weightInputInt);
-            } catch (Exception e) {
-                System.out.println(colorize("Invalid importance value!",RED_TEXT()));
-                return false;
-            }
-
-        }
-        return true;
     }
 
     // EFFECTS: Returns a goodbye message in one of 10 random languages

@@ -3,122 +3,155 @@ package model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class TaskTest {
 
-    private static int DEFAULT_WEIGHT = 3;
-
-    Task task;
+    Task taskNoDueDate;
+    Task taskDueDate;
     Date testDateA;
     Date testDateB;
-    Date zeroDate;
+    Date blankDate;
 
     @Before
-    public void setUp(){
-        testDateA = new Date(2020,3,23);
-        testDateB = new Date(2021, 4, 20);
-        zeroDate = new Date(0);
+    public void setUp() {
+        taskNoDueDate = new Task("Groceries");
+        Calendar cal = Calendar.getInstance();
+
+        cal.add(Calendar.YEAR,10);
+        blankDate = cal.getTime();
+        cal.set(2020,Calendar.MARCH,23);
+        testDateA = cal.getTime();
+        cal.set(2021,Calendar.APRIL,20);
+        testDateB = cal.getTime();
     }
 
     @Test
-    public void testMakeTaskNameOnly(){
-        task = new Task("Groceries");
-        assertEquals("Groceries", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+    public void testMakeTaskNoDueDate() {
+        assertEquals("Groceries", taskNoDueDate.getLabel());
+        assertEquals(blankDate,taskNoDueDate.getDueDate());
     }
 
     @Test
-    public void testMakeTaskNameDueDate(){
-        task = new Task("Groceries", testDateA);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateA, task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+    public void testMakeTaskWithDueDate() {
+        taskDueDate = new Task("Groceries", testDateA);
+        assertEquals("Groceries", taskDueDate.getLabel());
+        assertEquals(testDateA, taskDueDate.getDueDate());
     }
 
     @Test
-    public void testMakeTaskNameWeight(){
-        task = new Task("Groceries", 3);
-        assertEquals("Groceries", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(3,task.getWeight());
+    public void testChangeLabel() {
+        assertEquals("Groceries", taskNoDueDate.getLabel());
+        assertEquals(blankDate,taskNoDueDate.getDueDate());
+
+        taskNoDueDate.setLabel("Volunteering");
+        assertEquals("Volunteering", taskNoDueDate.getLabel());
+        assertEquals(blankDate,taskNoDueDate.getDueDate());
     }
 
     @Test
-    public void testMakeTaskNameDueDateWeight(){
-        task = new Task("Groceries", testDateA, 2);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateA, task.getDueDate());
-        assertEquals(2, task.getWeight());
+
+    public void testChangeLabelTwice() {
+        taskNoDueDate.setLabel("Volunteering");
+        assertEquals("Volunteering", taskNoDueDate.getLabel());
+
+        taskNoDueDate.setLabel("Shenanigans");
+        assertEquals("Shenanigans", taskNoDueDate.getLabel());
     }
 
     @Test
-    public void testChangeName(){
-        task = new Task("Groceries");
-        assertEquals("Groceries", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+    public void testSetDueDate() {
+        assertEquals("Groceries", taskNoDueDate.getLabel());
+        assertEquals(blankDate,taskNoDueDate.getDueDate());
 
-        task.setName("Volunteering");
-        assertEquals("Volunteering", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+        taskNoDueDate.setDueDate(testDateA);
+        assertEquals("Groceries", taskNoDueDate.getLabel());
+        assertEquals(testDateA, taskNoDueDate.getDueDate());
     }
 
     @Test
-    public void testSetDueDate(){
-        task = new Task("Groceries");
-        assertEquals("Groceries", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+    public void testChangeDueDate() {
+        taskDueDate = new Task("Groceries", testDateA);
+        assertEquals("Groceries", taskDueDate.getLabel());
+        assertEquals(testDateA, taskDueDate.getDueDate());
 
-        task.setDueDate(testDateA);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateA, task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+        taskDueDate.setDueDate(testDateB);
+        assertEquals("Groceries", taskDueDate.getLabel());
+        assertEquals(testDateB, taskDueDate.getDueDate());
     }
 
     @Test
-    public void testChangeDueDate(){
-        task = new Task("Groceries", testDateA);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateA, task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+    public void testSetAndChangeDueDate() {
+        taskNoDueDate.setDueDate(testDateB);
+        assertEquals("Groceries", taskNoDueDate.getLabel());
+        assertEquals(testDateB, taskNoDueDate.getDueDate());
 
-        task.setDueDate(testDateB);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateB, task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
+        taskNoDueDate.setDueDate(testDateA);
+        assertEquals("Groceries", taskNoDueDate.getLabel());
+        assertEquals(testDateA, taskNoDueDate.getDueDate());
     }
 
     @Test
-    public void testSetWeight(){
-        task = new Task("Groceries");
-        assertEquals("Groceries", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(DEFAULT_WEIGHT, task.getWeight());
-
-        task.setWeight(4);
-        assertEquals("Groceries", task.getName());
-        assertEquals(zeroDate,task.getDueDate());
-        assertEquals(4, task.getWeight());
+    public void testChangeDueDateAndLabel() {
+        taskNoDueDate.setDueDate(testDateA);
+        taskNoDueDate.setLabel("shenanigans");
+        assertEquals("shenanigans", taskNoDueDate.getLabel());
+        assertEquals(testDateA, taskNoDueDate.getDueDate());
     }
 
     @Test
-    public void testChangeWeight(){
-        task = new Task("Groceries", testDateA, 5);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateA, task.getDueDate());
-        assertEquals(5, task.getWeight());
+    public void testGetDueDateStringEmpty() {
+        assertEquals("No Due Date",taskNoDueDate.getDueDateString());
+    }
 
-        task.setWeight(1);
-        assertEquals("Groceries", task.getName());
-        assertEquals(testDateA, task.getDueDate());
-        assertEquals(1, task.getWeight());
+    @Test
+    public void testGetDueDateString() {
+        taskDueDate = new Task("Homework", testDateA);
+        assertEquals("Mon 23 Mar 2020",taskDueDate.getDueDateString());
+    }
+
+    @Test
+    public void testGetDaysUntilDueFuture() {
+        assertTrue(taskNoDueDate.getDaysUntilDue() == 3652 | taskNoDueDate.getDaysUntilDue() == 3651);
+    }
+
+    @Test
+    public void testGetDaysUntilDueToday() {
+        Calendar calToday = Calendar.getInstance();
+        taskDueDate = new Task("Shenanigans",calToday.getTime());
+
+        assertEquals(0,taskDueDate.getDaysUntilDue());
+    }
+
+    @Test
+    public void testGetDaysUntilDuePast() {
+        Calendar calPast = Calendar.getInstance();
+        calPast.add(Calendar.DATE,-5);
+        taskDueDate = new Task("Shenanigans",calPast.getTime());
+
+        assertEquals(-5,taskDueDate.getDaysUntilDue());
+    }
+
+    @Test
+    public void testCompareToLaterTask() {
+        taskDueDate = new Task("Shenanigans",testDateA);
+        assertEquals(-1,taskDueDate.compareTo(taskNoDueDate));
+    }
+
+    @Test
+    public void testCompareToSameDayTask() {
+        taskDueDate = new Task("Shenanigans",testDateA);
+        Task taskDueDateSame = new Task("Homework",testDateA);
+        assertEquals(0,taskDueDate.compareTo(taskDueDateSame));
+    }
+
+    @Test
+    public void testCompareToPastTask() {
+        taskDueDate = new Task("Shenanigans",testDateA);
+        assertEquals(1,taskNoDueDate.compareTo(taskDueDate));
     }
 
 }

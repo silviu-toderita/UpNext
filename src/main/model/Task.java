@@ -1,56 +1,37 @@
 package model;
 
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
-// Represents a task with a name, due date, and weight
+// Represents a task with a label and due date
 public class Task implements Comparable<Task> {
-    private static final int DEFAULT_WEIGHT = 3;
 
-    private String name;
+    private String label;
     private Date dueDate;
-    private int weight;
 
-    // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character
-    // EFFECTS: Creates a task with a name, no due date, and no weight
-    public Task(String name) {
-        this.name = name;
-        this.dueDate = new Date(0);
-        this.weight = DEFAULT_WEIGHT;
+    // REQUIRES: label must be >= 1 character in length and contain at least one non-numeric character
+    // EFFECTS: Creates a task with given label and a due date 10 years in the future
+    public Task(String label) {
+        this.label = label;
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR,10);
+        this.dueDate = cal.getTime();
     }
 
-    // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character
-    // EFFECTS: Creates a task with a name, a due date, and no weight
-    public Task(String name, Date dueDate) {
-        this.name = name;
+    // REQUIRES: label must be >= 1 character in length and contain at least one non-numeric character
+    // EFFECTS: Creates a task with given label and due date
+    public Task(String label, Date dueDate) {
+        this.label = label;
         this.dueDate = dueDate;
-        this.weight = DEFAULT_WEIGHT;
-    }
-
-    // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character,
-    //          and weight must be in [1,5]
-    // EFFECTS: Creates a task with a name, a weight, and no due date
-    public Task(String name, int weight) {
-        this.name = name;
-        this.dueDate = new Date(0);
-        this.weight = weight;
-    }
-
-    // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character,
-    //          and weight must be in [1,5]
-    // EFFECTS: Creates a task with a name, a due date , and a weight
-    public Task(String name, Date dueDate, int weight) {
-        this.name = name;
-        this.dueDate = dueDate;
-        this.weight = weight;
     }
 
     // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character
     // MODIFIES: this
-    // EFFECTS: Changes the name of this task
-    public void setName(String name) {
-        this.name = name;
+    // EFFECTS: Changes the label of this task
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     // MODIFIES: this
@@ -59,43 +40,42 @@ public class Task implements Comparable<Task> {
         this.dueDate = dueDate;
     }
 
-    // REQUIRES: weight must be in [1,5]
-    // MODIFIES: this
-    // EFFECTS: Changes the weight of this task
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
-    // EFFECTS: Returns this task's name
-    public String getName() {
-        return name;
-    }
-
-    // EFFECTS: Returns this task's due date as a raw date
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    // EFFECTS: Returns this task's due date as a formatted string
+    // EFFECTS: Returns this task's due date as a string. For example: "Thu 11 Feb 2021". If due date is over 5 years in
+    //          the future, returns "No Due Date"
     public String getDueDateString() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dueDate);
-        if (cal.get(Calendar.YEAR) == 1969) {
-            return "NO DUE DATE";
+        Calendar calDue = Calendar.getInstance();
+        calDue.setTime(dueDate);
+        Calendar calToday = Calendar.getInstance();
+        if (calDue.get(Calendar.YEAR) >= calToday.get(Calendar.YEAR) + 5) {
+            return "No Due Date";
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy");
-        return sdf.format(cal.getTime());
+        return sdf.format(calDue.getTime());
     }
 
-    // EFFECTS: Returns this task's weight
-    public int getWeight() {
-        return weight;
+    // EFFECTS: Returns the number of days until this task is due
+    public int getDaysUntilDue() {
+        Calendar calDue = Calendar.getInstance();
+        calDue.setTime(dueDate);
+        Calendar calToday = Calendar.getInstance();
+        long daysUntilDue = ChronoUnit.DAYS.between(calToday.toInstant(), calDue.toInstant());
+        return (int)daysUntilDue;
     }
 
     // EFFECTS: Compares this task to another task by due date
     @Override
     public int compareTo(Task o) {
         return this.getDueDate().compareTo(o.getDueDate());
+    }
+
+    // EFFECTS: Returns this task's label
+    public String getLabel() {
+        return label;
+    }
+
+    // EFFECTS: Returns this task's due date as a raw date
+    public Date getDueDate() {
+        return dueDate;
     }
 }

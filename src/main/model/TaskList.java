@@ -2,7 +2,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 // Represents a list of Tasks
@@ -27,26 +26,43 @@ public class TaskList {
         taskList.remove(id);
     }
 
-    // EFFECTS: Returns the size of the task list
-    public int size() {
-        return taskList.size();
-    }
-
-    // REQUIRES: name must be >= 1 character in size
-    // EFFECTS: Returns the id of the first task with matching name, or -1 if it's not in list
-    public int find(String name) {
-        for (int i = 0; i < taskList.size(); i++) {
-            if (taskList.get(i).getName().equals(name)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     // MODIFIES: this
     // EFFECT: Sorts the task list in order from smallest due date to largest due date
     public void sort() {
         Collections.sort(taskList);
+    }
+
+
+    // EFFECTS: Returns the maximum number of days until a task is due. Tasks due > 5 years in the future do not count
+    //          towards the maximum
+    public int getMaxDaysUntilDue() {
+        int maxDaysLeft = 0;
+        for (Task each: taskList) {
+            int daysLeft = each.getDaysUntilDue();
+            if (daysLeft > maxDaysLeft & daysLeft < 1825) {
+                maxDaysLeft = daysLeft;
+            }
+        }
+
+        return maxDaysLeft;
+    }
+
+    // EFFECTS: Returns the char length of the longest task label
+    public int getMaxLabelLength() {
+        int maxLength = 0;
+        for (Task each: taskList) {
+            int taskLabelLength = each.getLabel().length();
+            if (taskLabelLength > maxLength) {
+                maxLength = taskLabelLength;
+            }
+        }
+
+        return maxLength;
+    }
+
+    // EFFECTS: Returns the size of the task list
+    public int size() {
+        return taskList.size();
     }
 
     // REQUIRES: id must be a valid index in the task list
@@ -54,8 +70,6 @@ public class TaskList {
     public Task get(int id) {
         return taskList.get(id);
     }
-
-
 
 
 }

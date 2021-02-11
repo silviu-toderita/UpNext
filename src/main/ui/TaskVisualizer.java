@@ -10,6 +10,7 @@ import java.util.Calendar;
 import static com.diogonunes.jcolor.Ansi.colorize;
 import static com.diogonunes.jcolor.Attribute.*;
 
+// Represents an object that generates the chronological task visualizer
 public class TaskVisualizer {
     private static final int MAX_CHAR_WIDTH = 150;
 
@@ -52,8 +53,8 @@ public class TaskVisualizer {
     public String allTasks() {
         taskList.sort();
 
-        int maxNameLength = longestTaskName();
-        int maxDaysLeft = maxDaysUntilDue(taskList);
+        int maxNameLength = taskList.getMaxLabelLength();
+        int maxDaysLeft = taskList.getMaxDaysUntilDue();
         String output = "";
         for (int i = 0; i < taskList.size(); i++) {
             Task task = taskList.get(i);
@@ -71,12 +72,12 @@ public class TaskVisualizer {
 
     // EFFECT: Return a string for each row representing one task in a chronological task chart
     private String eachTask(Task task, int maxNameLength, int maxDaysLeft) {
-        String name = task.getName();
+        String name = task.getLabel();
         int spacesRequiredAfterName = maxNameLength - name.length();
         int chartLength = MAX_CHAR_WIDTH - maxNameLength - 26;
         String output = "";
 
-        int daysLeft = daysUntilDue(task);
+        int daysLeft = task.getDaysUntilDue();
 
         output = output.concat(colorizeDeadline(name,daysLeft));
         output = output.concat(generateSpaces(spacesRequiredAfterName));
@@ -104,7 +105,7 @@ public class TaskVisualizer {
 
     // EFFECT: Generate a chart that shows a chronological view of the time left until a task is due
     private String generateChart(int daysLeft, int maxDaysLeft, int length) {
-        if (daysLeft > 0) {
+        if (daysLeft > 0 & daysLeft < 1825) {
             float percentOfMax = (float) daysLeft / maxDaysLeft;
             float charsUntilDue = percentOfMax * length;
 
@@ -113,6 +114,8 @@ public class TaskVisualizer {
                 output = output.concat("+");
             }
             return output.concat(colorizeDeadline(">|=|", daysLeft));
+        } else if (daysLeft >= 1825) {
+            return "";
         } else if (daysLeft == 0) {
             return (colorizeDeadline("DUE TODAY:", 0));
         } else {
@@ -143,40 +146,6 @@ public class TaskVisualizer {
             output = output.concat(" ");
         }
         return output;
-    }
-
-    // EFFECT: Return the number of characters of the longest task name
-    private int longestTaskName() {
-        int length = 0;
-        for (int i = 0; i < taskList.size(); i++) {
-            int taskNameLength = taskList.get(i).getName().length();
-            if (taskNameLength > length) {
-                length = taskNameLength;
-            }
-        }
-
-        return length;
-    }
-
-    // EFFECT: Return the maximum number of days until a task in the task list is due
-    private int maxDaysUntilDue(TaskList taskList) {
-        int maxDaysLeft = 0;
-        for (int i = 0; i < taskList.size(); i++) {
-            int daysLeft = daysUntilDue(taskList.get(i));
-            if (daysLeft > maxDaysLeft) {
-                maxDaysLeft = daysLeft;
-            }
-        }
-
-        return maxDaysLeft;
-    }
-
-    // EFFECT: Return the number of days until a task is due
-    private int daysUntilDue(Task task) {
-        Calendar dueDate = Calendar.getInstance();
-        dueDate.setTime(task.getDueDate());
-        Calendar todayDate = Calendar.getInstance();
-        return (int) ChronoUnit.DAYS.between(todayDate.toInstant(), dueDate.toInstant());
     }
 
 }
