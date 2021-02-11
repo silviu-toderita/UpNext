@@ -50,7 +50,10 @@ public class TaskVisualizer {
 
     // EFFECT: Return a string representing all tasks in a chronological task chart
     public String allTasks() {
+        taskList.sort();
+
         int maxNameLength = longestTaskName();
+        int maxDaysLeft = maxDaysUntilDue(taskList);
         String output = "";
         for (int i = 0; i < taskList.size(); i++) {
             Task task = taskList.get(i);
@@ -60,17 +63,17 @@ public class TaskVisualizer {
             if (i < 9) {
                 output = output.concat(" ");
             }
-            output = output.concat(eachTask(task, maxNameLength));
+            output = output.concat(eachTask(task, maxNameLength, maxDaysLeft));
             output = output.concat("\n");
         }
         return output;
     }
 
     // EFFECT: Return a string for each row representing one task in a chronological task chart
-    private String eachTask(Task task, int maxNameLength) {
+    private String eachTask(Task task, int maxNameLength, int maxDaysLeft) {
         String name = task.getName();
         int spacesRequiredAfterName = maxNameLength - name.length();
-        int chartLength = MAX_CHAR_WIDTH - maxNameLength - 25;
+        int chartLength = MAX_CHAR_WIDTH - maxNameLength - 26;
         String output = "";
 
         int daysLeft = daysUntilDue(task);
@@ -78,8 +81,8 @@ public class TaskVisualizer {
         output = output.concat(colorizeDeadline(name,daysLeft));
         output = output.concat(generateSpaces(spacesRequiredAfterName));
         output = output.concat("|");
-        output = output.concat(generateChart(task, chartLength));
-        output = output.concat("|Due ");
+        output = output.concat(generateChart(daysLeft, maxDaysLeft, chartLength));
+        output = output.concat("  ");
         output = output.concat(colorizeDeadline(task.getDueDateString(), daysLeft));
 
         return output;
@@ -100,12 +103,28 @@ public class TaskVisualizer {
     }
 
     // EFFECT: Generate a chart that shows a chronological view of the time left until a task is due
-    private String generateChart(Task task, int length) {
-        String output = "";
-        for (int i = 0; i < length; i++) {
-            output = output.concat("+");
+    private String generateChart(int daysLeft, int maxDaysLeft, int length) {
+        if (daysLeft > 0) {
+            float percentOfMax = (float) daysLeft / maxDaysLeft;
+            float charsUntilDue = percentOfMax * length;
+
+            String output = "";
+            for (int i = 0; i < charsUntilDue; i++) {
+                output = output.concat("+");
+            }
+            return output.concat(colorizeDeadline(">|=|", daysLeft));
+        } else if (daysLeft == 0) {
+            return (colorizeDeadline("DUE TODAY:", 0));
+        } else {
+            String output = "OVERDUE BY ";
+            output = output.concat(Integer.toString(daysLeft * -1));
+            if (daysLeft == -1) {
+                output = output.concat(" DAY:");
+            } else {
+                output = output.concat(" DAYS:");
+            }
+            return (colorizeDeadline(output, -1));
         }
-        return output;
     }
 
     // EFFECT: Return a string of hyphens with given length
@@ -139,12 +158,25 @@ public class TaskVisualizer {
         return length;
     }
 
+    // EFFECT: Return the maximum number of days until a task in the task list is due
+    private int maxDaysUntilDue(TaskList taskList) {
+        int maxDaysLeft = 0;
+        for (int i = 0; i < taskList.size(); i++) {
+            int daysLeft = daysUntilDue(taskList.get(i));
+            if (daysLeft > maxDaysLeft) {
+                maxDaysLeft = daysLeft;
+            }
+        }
+
+        return maxDaysLeft;
+    }
+
     // EFFECT: Return the number of days until a task is due
     private int daysUntilDue(Task task) {
         Calendar dueDate = Calendar.getInstance();
         dueDate.setTime(task.getDueDate());
         Calendar todayDate = Calendar.getInstance();
-        return (int) ChronoUnit.DAYS.between(todayDate.toInstant(), dueDate.toInstant()) + 1;
+        return (int) ChronoUnit.DAYS.between(todayDate.toInstant(), dueDate.toInstant());
     }
 
 }

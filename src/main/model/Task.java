@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 // Represents a task with a name, due date, and weight
-public class Task {
+public class Task implements Comparable<Task> {
     private static final int DEFAULT_WEIGHT = 3;
 
     private String name;
@@ -93,4 +93,9 @@ public class Task {
         return weight;
     }
 
+    // EFFECTS: Compares this task to another task by due date
+    @Override
+    public int compareTo(Task o) {
+        return this.getDueDate().compareTo(o.getDueDate());
+    }
 }

@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class TaskList {
             }
         }
         return -1;
+    }
+
+    // MODIFIES: this
+    // EFFECT: Sorts the task list in order from smallest due date to largest due date
+    public void sort() {
+        Collections.sort(taskList);
     }
 
     // REQUIRES: id must be a valid index in the task list

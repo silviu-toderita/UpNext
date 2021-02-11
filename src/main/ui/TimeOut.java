@@ -29,7 +29,7 @@ public class TimeOut {
         Calendar cal = Calendar.getInstance();
         cal.set(2021,Calendar.MARCH,7);
         Task sampleTaskA = new Task("CPSC210 Project Phase 2", cal.getTime(), 3);
-        cal.set(2021,Calendar.FEBRUARY,28);
+        cal.set(2021,Calendar.MARCH,1);
         Task sampleTaskB = new Task("CPEN311 Lab 3", cal.getTime(),4);
         cal.set(2021,Calendar.FEBRUARY,25);
         Task sampleTaskC = new Task("CPSC121 Assignment 2", cal.getTime());
