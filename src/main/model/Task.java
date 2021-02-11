@@ -84,7 +84,7 @@ public class Task {
             return "NO DUE DATE";
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy");
         return sdf.format(cal.getTime());
     }
 
