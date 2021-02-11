@@ -1,12 +1,12 @@
 package model;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 // Tests for model.TaskList class
 public class TaskListTest {
@@ -16,7 +16,7 @@ public class TaskListTest {
     Task testTaskB;
     Task testTaskC;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         taskList = new TaskList();
 

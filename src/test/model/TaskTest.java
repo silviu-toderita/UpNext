@@ -1,12 +1,11 @@
 package model;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
-
-import static org.junit.Assert.*;
 
 // Tests for Task class
 public class TaskTest {
@@ -17,7 +16,7 @@ public class TaskTest {
     Date testDateB;
     Date blankDate;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         taskNoDueDate = new Task("Groceries");
         Calendar cal = Calendar.getInstance();
