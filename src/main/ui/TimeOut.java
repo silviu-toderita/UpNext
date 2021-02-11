@@ -317,12 +317,18 @@ public class TimeOut {
     private boolean captureWeight(Task task) {
         String weightInput = INPUT.nextLine();
         if (weightInput.length() > 0) {
-            int weightInputInt = Integer.parseInt(weightInput);
-            if (weightInputInt < 1 | weightInputInt > 5) {
+            try {
+                int weightInputInt = Integer.parseInt(weightInput);
+                if (weightInputInt < 1 | weightInputInt > 5) {
+                    System.out.println(colorize("Invalid importance value!",RED_TEXT()));
+                    return false;
+                }
+                task.setWeight(weightInputInt);
+            } catch (Exception e) {
                 System.out.println(colorize("Invalid importance value!",RED_TEXT()));
                 return false;
             }
-            task.setWeight(weightInputInt);
+
         }
         return true;
     }
@@ -342,6 +348,6 @@ public class TimeOut {
             case 8: return colorize("Adeus!",MAGENTA_TEXT());
             case 9: return colorize("Sampai Jumpa!",MAGENTA_TEXT());
         }
-        return colorize("Bye-bye!",MAGENTA_TEXT());
+        return colorize("Bye-bye!",YELLOW_TEXT());
     }
 }
