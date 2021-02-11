@@ -274,6 +274,21 @@ public class TaskListTest {
     }
 
     @Test
+    public void testMaxDaysUntilDueThreeTasksOneFarFuture() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE,-15);
+        testTaskB.setDueDate(cal.getTime());
+        cal.add(Calendar.DATE,100);
+        testTaskC.setDueDate(cal.getTime());
+        testTaskA = new Task("Groceries");
+
+        taskList.add(testTaskA);
+        taskList.add(testTaskB);
+        taskList.add(testTaskC);
+        assertEquals(100,taskList.getMaxDaysUntilDue());
+    }
+
+    @Test
     public void testGetMaxLabelLengthNoTasks() {
         assertEquals(0,taskList.getMaxLabelLength());
     }
