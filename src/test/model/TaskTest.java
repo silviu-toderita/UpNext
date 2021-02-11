@@ -121,6 +121,7 @@ public class TaskTest {
     @Test
     public void testGetDaysUntilDueToday() {
         Calendar calToday = Calendar.getInstance();
+        calToday.add(Calendar.HOUR, 1);
         taskDueDate = new Task("Shenanigans",calToday.getTime());
 
         assertEquals(0,taskDueDate.getDaysUntilDue());

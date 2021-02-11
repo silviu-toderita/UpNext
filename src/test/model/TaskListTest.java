@@ -21,6 +21,7 @@ public class TaskListTest {
         taskList = new TaskList();
 
         Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.HOUR,1);
         Date testDate = cal.getTime();
         testTaskA = new Task("Groceries", testDate);
         testTaskB = new Task("Volunteering", testDate);
