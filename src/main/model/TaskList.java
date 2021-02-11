@@ -32,9 +32,9 @@ public class TaskList {
         Collections.sort(taskList);
     }
 
-
+    // REQUIRES: At least one task must be in the task list
     // EFFECTS: Returns the maximum number of days until a task is due. Tasks due > 5 years in the future do not count
-    //          towards the maximum
+    //          towards the maximum. Always returns >=0.
     public int getMaxDaysUntilDue() {
         int maxDaysLeft = 0;
         for (Task each: taskList) {
@@ -47,7 +47,7 @@ public class TaskList {
         return maxDaysLeft;
     }
 
-    // EFFECTS: Returns the char length of the longest task label
+    // EFFECTS: Returns the char length of the longest task label. Returns 0 if there are no tasks in list
     public int getMaxLabelLength() {
         int maxLength = 0;
         for (Task each: taskList) {

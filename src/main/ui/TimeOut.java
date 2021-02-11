@@ -69,7 +69,7 @@ public class TimeOut {
 
     // EFFECTS: Returns text instructions for the user on commands they can enter
     private String formatCommands() {
-        String commands = "Please choose from one of these commands:  ";
+        String commands = "Please type one of these commands and press enter:  ";
         commands = commands.concat(formatCommand(NEW_COMMAND));
         commands = commands.concat(formatCommand(COMPLETE_COMMAND));
         commands = commands.concat(formatCommand(EDIT_COMMAND));
@@ -135,12 +135,12 @@ public class TimeOut {
         String name;
 
         while (true) {
-            System.out.println(colorize("Please enter the name of the new task: ", MAGENTA_TEXT()));
+            System.out.println(colorize("Please enter a name for the new task: ", MAGENTA_TEXT()));
             name = INPUT.nextLine();
             if (name.length() > 0) {
                 break;
             } else {
-                System.out.println(colorize("The name of the task can't be empty!",RED_TEXT()));
+                System.out.println(colorize("The name of the task can't be blank!",RED_TEXT()));
             }
         }
 
@@ -156,7 +156,7 @@ public class TimeOut {
     // MODIFIES: this
     // EFFECTS: Captures user input to complete a task
     private void completeTask() {
-        System.out.print(colorize("Please enter the task number you would like to complete [",MAGENTA_TEXT()));
+        System.out.print(colorize("Please enter the task number you have completed [",MAGENTA_TEXT()));
         System.out.print("1");
         int size = TASK_LIST.size();
         if (size > 1) {
@@ -210,7 +210,7 @@ public class TimeOut {
     private void editLabel(Task task) {
         System.out.print(colorize("You've selected to edit: ", MAGENTA_TEXT()));
         System.out.print(task.getLabel());
-        System.out.println(colorize(" - Please enter a new name (or press enter to keep the current name): ",
+        System.out.println(colorize(" - Please enter a new name, or press enter to keep the current name: ",
                 MAGENTA_TEXT()));
         String labelInput = INPUT.nextLine();
         if (labelInput.length() > 0) {
@@ -226,8 +226,9 @@ public class TimeOut {
         System.out.print(colorize("The due date for the selected task is: ", MAGENTA_TEXT()));
         System.out.println(task.getDueDateString());
         while (true) {
-            System.out.print(colorize("Please enter a new due date as DD, DD-MM, or DD-MM-YYYY ", MAGENTA_TEXT()));
-            System.out.println(colorize("(or press enter to keep the current date): ", MAGENTA_TEXT()));
+            System.out.print(colorize("Please enter a new due date as DD, DD-MM, or DD-MM-YYYY, ",
+                    MAGENTA_TEXT()));
+            System.out.println(colorize("or press enter if you don't want to edit the date: ", MAGENTA_TEXT()));
             if (captureDate(task)) {
                 System.out.print(colorize("Due date updated to: ", GREEN_TEXT()));
                 System.out.println(task.getDueDateString());
@@ -240,9 +241,9 @@ public class TimeOut {
     // EFFECTS: Captures user input to get a due date for a new task
     private void addDate(Task task) {
         do {
-            System.out.print(colorize("Please enter a date for the new task as DD, DD-MM, or DD-MM-YYYY ",
+            System.out.print(colorize("Please enter a date for the new task as DD, DD-MM, or DD-MM-YYYY, ",
                     MAGENTA_TEXT()));
-            System.out.println(colorize("(or press enter to skip): ",MAGENTA_TEXT()));
+            System.out.println(colorize("or press enter if the task has no due date: ",MAGENTA_TEXT()));
         } while (!captureDate(task));
 
     }
