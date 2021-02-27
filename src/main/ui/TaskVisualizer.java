@@ -98,7 +98,6 @@ public class TaskVisualizer {
         } else {
             output = colorize(input,GREEN_TEXT());
         }
-
         return output;
     }
 

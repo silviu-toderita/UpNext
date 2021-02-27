@@ -27,11 +27,11 @@ public class TimeOut {
     // EFFECTS: Adds some sample tasks to the task list for demonstration
     public void addSampleTasks() {
         Calendar cal = Calendar.getInstance();
-        cal.set(2021,Calendar.MARCH,7);
+        cal.set(2021,Calendar.MARCH,7,23,59,59);
         Task sampleTaskA = new Task("CPSC210 Project Phase 2", cal.getTime());
-        cal.set(2021,Calendar.MARCH,1);
+        cal.set(2021,Calendar.MARCH,1,23,59,59);
         Task sampleTaskB = new Task("CPEN311 Lab 3", cal.getTime());
-        cal.set(2021,Calendar.FEBRUARY,25);
+        cal.set(2021,Calendar.FEBRUARY,25,23,59,59);
         Task sampleTaskC = new Task("CPSC121 Assignment 2", cal.getTime());
         Task sampleTaskD = new Task("LEGO Battlebots Timer Project");
         TASK_LIST.add(sampleTaskA);
@@ -284,7 +284,7 @@ public class TimeOut {
             month = Integer.parseInt(input.substring(firstHyphenPosition + 1, secondHyphenPosition)) - 1;
             year = Integer.parseInt(input.substring(secondHyphenPosition + 1));
         }
-        cal.set(year, month, day);
+        cal.set(year, month, day,23,59,59);
         return cal.getTime();
     }
 

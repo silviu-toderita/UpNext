@@ -15,6 +15,8 @@ This project is interesting to me because chronological task-management has alwa
 - As a user, I want to change an existing task
 - As a user, I want to mark a task as completed
 - As a user, I want to view my remaining tasks chronologically
+- As a user, I want my tasks to save automatically whenever I add a new task, change a task, or complete a task
+- As a user, I want my tasks to be loaded automatically when I start the application
 
 ## Dependencies
 
