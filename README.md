@@ -21,3 +21,4 @@ This project is interesting to me because chronological task-management has alwa
 ## Dependencies
 
 - [com.diogonunes:JColor:5.0.1](https://github.com/dialex/JColor)
+- [org.json:20200518](https://github.com/stleary/JSON-java)
