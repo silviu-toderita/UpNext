@@ -5,7 +5,6 @@ import exceptions.LabelLengthException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -26,8 +25,8 @@ public class Task implements Comparable<Task> {
 
         this.label = label;
         Calendar cal = Calendar.getInstance();
-        cal.set(2030,Calendar.DECEMBER,31,23,59,59);
-        this.dueDate = cal.getTime();
+        cal.set(2030,Calendar.DECEMBER,31);
+        this.dueDate = setDefaultTime(cal.getTime());
     }
 
     // EFFECTS: Creates a task with given label and due date
@@ -38,7 +37,8 @@ public class Task implements Comparable<Task> {
         }
 
         this.label = label;
-        this.dueDate = dueDate;
+
+        this.dueDate = setDefaultTime(dueDate);
     }
 
     // EFFECTS: Creates a task based on the data in the given JSON object
@@ -51,9 +51,9 @@ public class Task implements Comparable<Task> {
             int month = jsonObject.getInt("month");
             int day = jsonObject.getInt("day");
 
-            Calendar calDue = Calendar.getInstance();
-            calDue.set(year,month,day,23,59,59);
-            this.dueDate = calDue.getTime();
+            Calendar cal = Calendar.getInstance();
+            cal.set(year,month,day);
+            this.dueDate = setDefaultTime(cal.getTime());
         } catch (JSONException e) {
             throw new InvalidJsonException();
         }
@@ -74,7 +74,7 @@ public class Task implements Comparable<Task> {
     // MODIFIES: this
     // EFFECTS: Changes the due date of this task
     public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
+        this.dueDate = setDefaultTime(dueDate);
     }
 
     // EFFECTS: Returns this task's due date as a string. For example: "Thu 11 Feb 2021". If due date is over 5 years in
@@ -126,5 +126,17 @@ public class Task implements Comparable<Task> {
     // EFFECTS: Returns this task's due date as a raw date
     public Date getDueDate() {
         return dueDate;
+    }
+
+    // EFFECT: Sets the time of the given date to midnight - 1 second and returns date
+    private Date setDefaultTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+
+        return cal.getTime();
     }
 }

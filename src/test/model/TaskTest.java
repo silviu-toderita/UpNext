@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 // Tests for Task class
-public class TaskTest {
+public class TaskTest extends DateTest {
 
     Task taskNoDueDate;
     Task taskDueDate;
@@ -24,7 +24,7 @@ public class TaskTest {
         try {
             taskNoDueDate = new Task("Groceries");
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         Calendar cal = Calendar.getInstance();
 
@@ -39,16 +39,16 @@ public class TaskTest {
     @Test
     public void testMakeTaskNoDueDate() {
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEquals(blankDate.getTime() / 1000,taskNoDueDate.getDueDate().getTime() / 1000);
+        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
     }
 
     @Test
     public void testMakeTaskNoDueDateEmptyLabel() {
         try {
             taskNoDueDate = new Task("");
-            fail("Uncaught exception: LabelLengthException");
+            fail("Expected Label Length Exception");
         } catch (LabelLengthException e) {
-            return;
+            // Expected Behaviour
         }
     }
 
@@ -56,20 +56,21 @@ public class TaskTest {
     public void testMakeTaskWithDueDate() {
         try {
             taskDueDate = new Task("Groceries", testDateA);
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals("Groceries", taskDueDate.getLabel());
-        assertEquals(testDateA, taskDueDate.getDueDate());
+        assertEqualDate(testDateA, taskDueDate.getDueDate());
     }
 
     @Test
     public void testMakeTaskWithDueDateEmptyLabel() {
         try {
             taskDueDate = new Task("",testDateA);
-            fail("Uncaught exception: LabelLengthException");
+            fail("Expected Label Length Exception");
         } catch (LabelLengthException e) {
-            return;
+            // Expected Behaviour
         }
     }
 
@@ -90,8 +91,9 @@ public class TaskTest {
             assertEquals(2021, cal.get(Calendar.YEAR));
             assertEquals(Calendar.APRIL, cal.get(Calendar.MONTH));
             assertEquals(20, cal.get(Calendar.DATE));
+            // Expected Behaviour
         } catch (InvalidJsonException e) {
-            fail("Invalid JSON!");
+            fail("Invalid JSON Exception");
         }
     }
 
@@ -105,9 +107,9 @@ public class TaskTest {
 
         try {
             taskDueDate = new Task(jsonObject);
-            fail("Uncaught InvalidJsonException!");
+            fail("Expected Invalid JSON Exception");
         } catch (InvalidJsonException e) {
-            return;
+            // Expected Behaviour
         }
     }
 
@@ -117,25 +119,27 @@ public class TaskTest {
 
         try {
             taskNoDueDate.setLabel("Volunteering");
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
 
         assertEquals("Volunteering", taskNoDueDate.getLabel());
-        assertEquals(blankDate.getTime() / 1000,taskNoDueDate.getDueDate().getTime() / 1000);
+        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
     }
 
     @Test
     public void testChangeLabelEmptyLabel() {
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEquals(blankDate.getTime(),taskNoDueDate.getDueDate().getTime());
+        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
 
         try {
             taskNoDueDate.setLabel("");
-            fail("Uncaught exception: LabelLengthException");
+            fail("Expected Label Length Exception");
         } catch (LabelLengthException e) {
             assertEquals("Groceries", taskNoDueDate.getLabel());
-            assertEquals(blankDate,taskNoDueDate.getDueDate());
+            assertEqualDate(blankDate,taskNoDueDate.getDueDate());
+            // Expected Behaviour
         }
 
     }
@@ -144,15 +148,17 @@ public class TaskTest {
     public void testChangeLabelTwice() {
         try {
             taskNoDueDate.setLabel("Volunteering");
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals("Volunteering", taskNoDueDate.getLabel());
 
         try {
             taskNoDueDate.setLabel("Shenanigans");
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals("Shenanigans", taskNoDueDate.getLabel());
     }
@@ -160,37 +166,38 @@ public class TaskTest {
     @Test
     public void testSetDueDate() {
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEquals(blankDate.getTime() / 1000,taskNoDueDate.getDueDate().getTime() / 1000);
+        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
 
         taskNoDueDate.setDueDate(testDateA);
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEquals(testDateA, taskNoDueDate.getDueDate());
+        assertEqualDate(testDateA, taskNoDueDate.getDueDate());
     }
 
     @Test
     public void testChangeDueDate() {
         try {
             taskDueDate = new Task("Groceries", testDateA);
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals("Groceries", taskDueDate.getLabel());
-        assertEquals(testDateA, taskDueDate.getDueDate());
+        assertEqualDate(testDateA, taskDueDate.getDueDate());
 
         taskDueDate.setDueDate(testDateB);
         assertEquals("Groceries", taskDueDate.getLabel());
-        assertEquals(testDateB, taskDueDate.getDueDate());
+        assertEqualDate(testDateB, taskDueDate.getDueDate());
     }
 
     @Test
     public void testSetAndChangeDueDate() {
         taskNoDueDate.setDueDate(testDateB);
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEquals(testDateB, taskNoDueDate.getDueDate());
+        assertEqualDate(testDateB, taskNoDueDate.getDueDate());
 
         taskNoDueDate.setDueDate(testDateA);
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEquals(testDateA, taskNoDueDate.getDueDate());
+        assertEqualDate(testDateA, taskNoDueDate.getDueDate());
     }
 
     @Test
@@ -198,11 +205,12 @@ public class TaskTest {
         taskNoDueDate.setDueDate(testDateA);
         try {
             taskNoDueDate.setLabel("shenanigans");
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals("shenanigans", taskNoDueDate.getLabel());
-        assertEquals(testDateA, taskNoDueDate.getDueDate());
+        assertEqualDate(testDateA, taskNoDueDate.getDueDate());
     }
 
     @Test
@@ -214,8 +222,9 @@ public class TaskTest {
     public void testGetDueDateString() {
         try {
             taskDueDate = new Task("Homework", testDateA);
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals("Mon 23 Mar 2020",taskDueDate.getDueDateString());
     }
@@ -225,7 +234,7 @@ public class TaskTest {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 100);
         taskNoDueDate.setDueDate(cal.getTime());
-        assertEquals(99, taskNoDueDate.getDaysUntilDue());
+        assertEquals(100, taskNoDueDate.getDaysUntilDue());
     }
 
     @Test
@@ -234,8 +243,9 @@ public class TaskTest {
         calToday.add(Calendar.HOUR, 1);
         try {
             taskDueDate = new Task("Shenanigans",calToday.getTime());
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
 
         assertEquals(0,taskDueDate.getDaysUntilDue());
@@ -245,8 +255,9 @@ public class TaskTest {
     public void testMakeJsonObject() {
         try {
             taskDueDate = new Task("Groceries", testDateA);
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
 
         JSONObject jsonObject = taskDueDate.makeJsonObject();
@@ -254,9 +265,10 @@ public class TaskTest {
         try {
             Task newTask = new Task(jsonObject);
             assertEquals("Groceries", newTask.getLabel());
-            assertEquals(testDateA.getTime() / 1000, newTask.getDueDate().getTime() / 1000);
+            assertEqualDate(testDateA, newTask.getDueDate());
+            // Expected Behaviour
         } catch (InvalidJsonException e) {
-            fail("Invalid JSON!");
+            fail("Invalid JSON Exception");
         }
 
     }
@@ -268,9 +280,10 @@ public class TaskTest {
         try {
             Task newTask = new Task(jsonObject);
             assertEquals("Groceries", newTask.getLabel());
-            assertEquals(blankDate.getTime(), newTask.getDueDate().getTime());
+            assertEqualDate(blankDate, newTask.getDueDate());
+            // Expected Behaviour
         } catch (InvalidJsonException e) {
-            fail("Invalid JSON!");
+            fail("Invalid JSON Exception");
         }
 
     }
@@ -281,19 +294,21 @@ public class TaskTest {
         calPast.add(Calendar.DATE,-5);
         try {
             taskDueDate = new Task("Shenanigans",calPast.getTime());
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
 
-        assertEquals(-5,taskDueDate.getDaysUntilDue());
+        assertEquals(-4,taskDueDate.getDaysUntilDue());
     }
 
     @Test
     public void testCompareToLaterTask() {
         try {
             taskDueDate = new Task("Shenanigans",testDateA);
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals(-1,taskDueDate.compareTo(taskNoDueDate));
     }
@@ -304,8 +319,9 @@ public class TaskTest {
             taskDueDate = new Task("Shenanigans",testDateA);
             Task taskDueDateSame = new Task("Homework",testDateA);
             assertEquals(0,taskDueDate.compareTo(taskDueDateSame));
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
     }
 
@@ -313,8 +329,9 @@ public class TaskTest {
     public void testCompareToPastTask() {
         try {
             taskDueDate = new Task("Shenanigans",testDateA);
+            // Expected Behaviour
         } catch (LabelLengthException e) {
-            fail("LabelLengthException thrown when label was long enough.");
+            fail("Label Length Exception");
         }
         assertEquals(1,taskNoDueDate.compareTo(taskDueDate));
     }
