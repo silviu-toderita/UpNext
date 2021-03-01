@@ -2,7 +2,10 @@ package ui;
 
 import model.Task;
 import model.TaskList;
+import persistence.ReaderWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 import static com.diogonunes.jcolor.Ansi.colorize;
@@ -14,47 +17,38 @@ public class TimeOut {
     private static final String COMPLETE_COMMAND = "complete";
     private static final String EDIT_COMMAND = "edit";
     private static final String QUIT_COMMAND = "quit";
+    private static final String SAVE_DATA_PATH = "./data/savedata.json";
 
-    private static final TaskList TASK_LIST = new TaskList();
-    private static final Scanner INPUT = new Scanner(System.in);
+    private TaskList taskList;
+    private Scanner input;
+    private ReaderWriter readerWriter;
 
     // EFFECTS: Initializes the UI by adding some sample tasks and starting the UI loop
     public TimeOut() {
-        addSampleTasks();
+        taskList = new TaskList();
+        input = new Scanner(System.in);
+        readerWriter = new ReaderWriter(SAVE_DATA_PATH);
         runUILoop();
-    }
-
-    // EFFECTS: Adds some sample tasks to the task list for demonstration
-    public void addSampleTasks() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(2021,Calendar.MARCH,7,23,59,59);
-        Task sampleTaskA = new Task("CPSC210 Project Phase 2", cal.getTime());
-        cal.set(2021,Calendar.MARCH,1,23,59,59);
-        Task sampleTaskB = new Task("CPEN311 Lab 3", cal.getTime());
-        cal.set(2021,Calendar.FEBRUARY,25,23,59,59);
-        Task sampleTaskC = new Task("CPSC121 Assignment 2", cal.getTime());
-        Task sampleTaskD = new Task("LEGO Battlebots Timer Project");
-        TASK_LIST.add(sampleTaskA);
-        TASK_LIST.add(sampleTaskB);
-        TASK_LIST.add(sampleTaskC);
-        TASK_LIST.add(sampleTaskD);
     }
 
     // EFFECTS: Runs a loop to generate the UI and capture user input
     private void runUILoop() {
-        TaskVisualizer taskVisualizer = new TaskVisualizer(TASK_LIST);
         System.out.println(colorize("\n#############################################################",
                 MAGENTA_TEXT()));
         System.out.println(colorize("####  ⌛⌛  TimeOut: Chronological Task-Management  ⌛⌛  ####",
                 MAGENTA_TEXT()));
         System.out.println(colorize("#############################################################",
                 MAGENTA_TEXT()));
+        loadTasks();
+
+        TaskVisualizer taskVisualizer = new TaskVisualizer(taskList);
+
         System.out.println(taskVisualizer.showTasks());
 
         while (true) {
             System.out.println(formatCommands());
 
-            String command = processInput(INPUT.nextLine());
+            String command = processInput(input.nextLine());
             if (command.equals(QUIT_COMMAND)) {
                 System.out.println(randomGoodbye());
                 break;
@@ -111,15 +105,18 @@ public class TimeOut {
         switch (command) {
             case NEW_COMMAND:
                 addTask();
+                save();
                 break;
             case COMPLETE_COMMAND:
-                if (TASK_LIST.size() > 0) {
+                if (taskList.size() > 0) {
                     completeTask();
+                    save();
                 }
                 break;
             case EDIT_COMMAND:
-                if (TASK_LIST.size() > 0) {
+                if (taskList.size() > 0) {
                     editTask();
+                    save();
                 }
                 break;
             default:
@@ -136,7 +133,7 @@ public class TimeOut {
 
         while (true) {
             System.out.println(colorize("Please enter a name for the new task: ", MAGENTA_TEXT()));
-            name = INPUT.nextLine();
+            name = input.nextLine();
             if (name.length() > 0) {
                 break;
             } else {
@@ -148,7 +145,7 @@ public class TimeOut {
 
         addDate(task);
 
-        TASK_LIST.add(task);
+        taskList.add(task);
         System.out.print(name);
         System.out.println(colorize(" has been added to TimeOut, get to work!",GREEN_TEXT()));
     }
@@ -158,18 +155,18 @@ public class TimeOut {
     private void completeTask() {
         System.out.print(colorize("Please enter the task number you have completed [",MAGENTA_TEXT()));
         System.out.print("1");
-        int size = TASK_LIST.size();
+        int size = taskList.size();
         if (size > 1) {
             System.out.print("-");
             System.out.print(size);
         }
         System.out.println(colorize("] or press enter to cancel: ", MAGENTA_TEXT()));
-        String command = INPUT.nextLine();
+        String command = input.nextLine();
         try {
             if (command.length() > 0) {
                 int taskNum = Integer.parseInt(command) - 1;
-                String name = TASK_LIST.get(taskNum).getLabel();
-                TASK_LIST.complete(taskNum);
+                String name = taskList.get(taskNum).getLabel();
+                taskList.complete(taskNum);
                 System.out.print(colorize("The following task has been marked as completed: ", GREEN_TEXT()));
                 System.out.print(name);
                 System.out.println(colorize(" - Great work!", GREEN_TEXT()));
@@ -185,17 +182,17 @@ public class TimeOut {
     private void editTask() {
         System.out.print(colorize("Please enter the task number you would like to edit [", MAGENTA_TEXT()));
         System.out.print("1");
-        int size = TASK_LIST.size();
+        int size = taskList.size();
         if (size > 1) {
             System.out.print("-");
             System.out.print(size);
         }
         System.out.println(colorize("] or press enter to cancel: ",MAGENTA_TEXT()));
-        String command = INPUT.nextLine();
+        String command = input.nextLine();
         try {
             if (command.length() > 0) {
                 int taskNum = Integer.parseInt(command) - 1;
-                Task task = TASK_LIST.get(taskNum);
+                Task task = taskList.get(taskNum);
                 editLabel(task);
                 editDate(task);
                 System.out.println(colorize("Task successfully updated!",GREEN_TEXT()));
@@ -212,7 +209,7 @@ public class TimeOut {
         System.out.print(task.getLabel());
         System.out.println(colorize(" - Please enter a new name, or press enter to keep the current name: ",
                 MAGENTA_TEXT()));
-        String labelInput = INPUT.nextLine();
+        String labelInput = input.nextLine();
         if (labelInput.length() > 0) {
             task.setLabel(labelInput);
             System.out.print(colorize("Task name updated to: ", GREEN_TEXT()));
@@ -251,7 +248,7 @@ public class TimeOut {
     // MODIFIES: task
     // EFFECTS: Captures user input for due date, returns true if it was successful
     private boolean captureDate(Task task) {
-        String dateInput = INPUT.nextLine();
+        String dateInput = input.nextLine();
         if (dateInput.length() > 0) {
             try {
                 task.setDueDate(parseDate(dateInput));
@@ -286,6 +283,26 @@ public class TimeOut {
         }
         cal.set(year, month, day,23,59,59);
         return cal.getTime();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: Loads a task list from a file
+    private void loadTasks() {
+        try {
+            taskList = readerWriter.read();
+            System.out.println(colorize("Tasks loaded successfully from file " + SAVE_DATA_PATH, GREEN_TEXT()));
+        } catch (IOException e) {
+            System.out.println(colorize("ERROR: Unable to read from file " + SAVE_DATA_PATH, RED_TEXT()));
+        }
+    }
+
+    // EFFECTS: Writes the current task list to a file
+    private void save() {
+        try {
+            readerWriter.write(taskList);
+        } catch (FileNotFoundException e) {
+            System.out.println(colorize("ERROR: Unable to write to file " + SAVE_DATA_PATH, RED_TEXT()));
+        }
     }
 
     // EFFECTS: Returns a goodbye message in one of 10 random languages

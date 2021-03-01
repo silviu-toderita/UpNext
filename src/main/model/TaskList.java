@@ -1,5 +1,8 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +61,16 @@ public class TaskList {
         }
 
         return maxLength;
+    }
+
+    // EFFECTS: Generates a JSON array that represents this task list
+    public JSONArray serialize() {
+        JSONArray jsonArray = new JSONArray();
+        for (Task each : taskList) {
+            jsonArray.put(each.makeJsonObject());
+        }
+
+        return jsonArray;
     }
 
     // EFFECTS: Returns the size of the task list

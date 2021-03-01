@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -25,6 +27,20 @@ public class Task implements Comparable<Task> {
     public Task(String label, Date dueDate) {
         this.label = label;
         this.dueDate = dueDate;
+    }
+
+    // REQUIRES: A JSON object matching the format from the makeJsonObject() method in this class
+    // EFFECTS: Creates a task based on the data in the given JSON object
+    public Task(JSONObject jsonObject) {
+        this.label = jsonObject.getString("label");
+
+        int year = jsonObject.getInt("year");
+        int month = jsonObject.getInt("month");
+        int day = jsonObject.getInt("day");
+
+        Calendar calDue = Calendar.getInstance();
+        calDue.set(year,month,day,23,59,59);
+        this.dueDate = calDue.getTime();
     }
 
     // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character
@@ -61,6 +77,18 @@ public class Task implements Comparable<Task> {
         Calendar calToday = Calendar.getInstance();
         long daysUntilDue = ChronoUnit.DAYS.between(calToday.toInstant(), calDue.toInstant());
         return (int)daysUntilDue;
+    }
+
+    // EFFECTS: Returns a JSON object that represents this task
+    public JSONObject makeJsonObject() {
+        JSONObject jsonObject = new JSONObject();
+        Calendar calDue = Calendar.getInstance();
+        calDue.setTime(dueDate);
+        jsonObject.put("label", label);
+        jsonObject.put("year", calDue.get(Calendar.YEAR));
+        jsonObject.put("month", calDue.get(Calendar.MONTH));
+        jsonObject.put("day", calDue.get(Calendar.DAY_OF_MONTH));
+        return jsonObject;
     }
 
     // EFFECTS: Compares this task to another task by due date

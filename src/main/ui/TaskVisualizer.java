@@ -19,7 +19,7 @@ public class TaskVisualizer {
     private static final String TASK_LIST_HEADER = "Here's what's on your plate: ";
     private static final String DONE_MESSAGE = "\uD83C\uDFDD You're all caught up, take a break! \uD83C\uDFDD"; //
 
-    TaskList taskList;
+    private TaskList taskList;
 
     public TaskVisualizer(TaskList taskList) {
         this.taskList = taskList;
