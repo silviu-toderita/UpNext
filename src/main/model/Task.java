@@ -1,7 +1,11 @@
 package model;
 
+import exceptions.InvalidJsonException;
+import exceptions.LabelLengthException;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -13,40 +17,57 @@ public class Task implements Comparable<Task> {
     private String label;
     private Date dueDate;
 
-    // REQUIRES: label must be >= 1 character in length and contain at least one non-numeric character
     // EFFECTS: Creates a task with given label and a due date 10 years in the future
-    public Task(String label) {
+    //          Throws LabelLengthException if label is less than 1 character long
+    public Task(String label) throws LabelLengthException {
+        if (label.length() < 1) {
+            throw new LabelLengthException();
+        }
+
         this.label = label;
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR,10);
+        cal.set(2030,Calendar.DECEMBER,31,23,59,59);
         this.dueDate = cal.getTime();
     }
 
-    // REQUIRES: label must be >= 1 character in length and contain at least one non-numeric character
     // EFFECTS: Creates a task with given label and due date
-    public Task(String label, Date dueDate) {
+    //          Throws LabelLengthException if label is less than 1 character long
+    public Task(String label, Date dueDate) throws LabelLengthException {
+        if (label.length() < 1) {
+            throw new LabelLengthException();
+        }
+
         this.label = label;
         this.dueDate = dueDate;
     }
 
-    // REQUIRES: A JSON object matching the format from the makeJsonObject() method in this class
     // EFFECTS: Creates a task based on the data in the given JSON object
-    public Task(JSONObject jsonObject) {
-        this.label = jsonObject.getString("label");
+    //          Throws InvalidJsonException when there is invalid JSON data in the given object
+    public Task(JSONObject jsonObject) throws InvalidJsonException {
+        try {
+            this.label = jsonObject.getString("label");
 
-        int year = jsonObject.getInt("year");
-        int month = jsonObject.getInt("month");
-        int day = jsonObject.getInt("day");
+            int year = jsonObject.getInt("year");
+            int month = jsonObject.getInt("month");
+            int day = jsonObject.getInt("day");
 
-        Calendar calDue = Calendar.getInstance();
-        calDue.set(year,month,day,23,59,59);
-        this.dueDate = calDue.getTime();
+            Calendar calDue = Calendar.getInstance();
+            calDue.set(year,month,day,23,59,59);
+            this.dueDate = calDue.getTime();
+        } catch (JSONException e) {
+            throw new InvalidJsonException();
+        }
+
     }
 
-    // REQUIRES: name must be >= 1 character in length and contain at least one non-numeric character
     // MODIFIES: this
     // EFFECTS: Changes the label of this task
-    public void setLabel(String label) {
+    //          Throws LabelLengthException if label is less than 1 character long
+    public void setLabel(String label) throws LabelLengthException {
+        if (label.length() < 1) {
+            throw new LabelLengthException();
+        }
+
         this.label = label;
     }
 

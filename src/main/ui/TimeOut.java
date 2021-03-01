@@ -1,5 +1,6 @@
 package ui;
 
+import exceptions.*;
 import model.Task;
 import model.TaskList;
 import persistence.ReaderWriter;
@@ -22,17 +23,14 @@ public class TimeOut {
     private TaskList taskList;
     private Scanner input;
     private ReaderWriter readerWriter;
+    private TaskVisualizer taskVisualizer;
 
-    // EFFECTS: Initializes the UI by adding some sample tasks and starting the UI loop
+    // EFFECTS: Initializes the UI by printing startup text, initializing objects, and starting UI loop
     public TimeOut() {
         taskList = new TaskList();
         input = new Scanner(System.in);
         readerWriter = new ReaderWriter(SAVE_DATA_PATH);
-        runUILoop();
-    }
 
-    // EFFECTS: Runs a loop to generate the UI and capture user input
-    private void runUILoop() {
         System.out.println(colorize("\n#############################################################",
                 MAGENTA_TEXT()));
         System.out.println(colorize("####  ⌛⌛  TimeOut: Chronological Task-Management  ⌛⌛  ####",
@@ -41,9 +39,14 @@ public class TimeOut {
                 MAGENTA_TEXT()));
         loadTasks();
 
-        TaskVisualizer taskVisualizer = new TaskVisualizer(taskList);
-
+        taskVisualizer = new TaskVisualizer(taskList);
         System.out.println(taskVisualizer.showTasks());
+
+        runUILoop();
+    }
+
+    // EFFECTS: Runs a loop to generate the UI and capture user input
+    private void runUILoop() {
 
         while (true) {
             System.out.println(formatCommands());
@@ -53,8 +56,11 @@ public class TimeOut {
                 System.out.println(randomGoodbye());
                 break;
             } else {
-                if (processCommand(command)) {
+                try {
+                    processCommand(command);
                     System.out.println(taskVisualizer.showTasks());
+                } catch (InvalidCommandException e) {
+                    System.out.println(colorize("Sorry, I didn't recognize that command!",RED_TEXT()));
                 }
             }
 
@@ -81,6 +87,31 @@ public class TimeOut {
         return formattedCommand;
     }
 
+    // MODIFIES: this
+    // EFFECTS: Process the given command
+    private void processCommand(String command) throws InvalidCommandException {
+        switch (command) {
+            case NEW_COMMAND:
+                addTask();
+                save();
+                break;
+            case COMPLETE_COMMAND:
+                if (taskList.size() > 0) {
+                    completeTask();
+                    save();
+                }
+                break;
+            case EDIT_COMMAND:
+                if (taskList.size() > 0) {
+                    editTask();
+                    save();
+                }
+                break;
+            default:
+                throw new InvalidCommandException();
+        }
+    }
+
     // EFFECTS: Returns a command based on user input. Accepts first letter of a command or the entire command,
     //          case-insensitive. Removes leading/trailing spaces
     private String processInput(String input) {
@@ -100,53 +131,26 @@ public class TimeOut {
     }
 
     // MODIFIES: this
-    // EFFECTS: Process the command and return true if it's a valid command
-    private boolean processCommand(String command) {
-        switch (command) {
-            case NEW_COMMAND:
-                addTask();
-                save();
-                break;
-            case COMPLETE_COMMAND:
-                if (taskList.size() > 0) {
-                    completeTask();
-                    save();
-                }
-                break;
-            case EDIT_COMMAND:
-                if (taskList.size() > 0) {
-                    editTask();
-                    save();
-                }
-                break;
-            default:
-                System.out.println(colorize("Sorry, I didn't recognize that command!",RED_TEXT()));
-                return false;
-        }
-        return true;
-    }
-
-    // MODIFIES: this
     // EFFECTS: Captures user input to create a new task
     private void addTask() {
-        String name;
+        Task task;
 
         while (true) {
             System.out.println(colorize("Please enter a name for the new task: ", MAGENTA_TEXT()));
-            name = input.nextLine();
-            if (name.length() > 0) {
+
+            try {
+                task = new Task(input.nextLine());
                 break;
-            } else {
+            } catch (LabelLengthException e) {
                 System.out.println(colorize("The name of the task can't be blank!",RED_TEXT()));
             }
-        }
 
-        Task task = new Task(name);
+        }
 
         addDate(task);
 
         taskList.add(task);
-        System.out.print(name);
+        System.out.print(task.getLabel());
         System.out.println(colorize(" has been added to TimeOut, get to work!",GREEN_TEXT()));
     }
 
@@ -161,19 +165,19 @@ public class TimeOut {
             System.out.print(size);
         }
         System.out.println(colorize("] or press enter to cancel: ", MAGENTA_TEXT()));
+
         String command = input.nextLine();
-        try {
-            if (command.length() > 0) {
-                int taskNum = Integer.parseInt(command) - 1;
+        if (command.length() > 0) {
+            int taskNum = Integer.parseInt(command) - 1;
+            try {
                 String name = taskList.get(taskNum).getLabel();
                 taskList.complete(taskNum);
                 System.out.print(colorize("The following task has been marked as completed: ", GREEN_TEXT()));
                 System.out.print(name);
                 System.out.println(colorize(" - Great work!", GREEN_TEXT()));
-
+            } catch (InvalidIndexException e) {
+                System.out.println(colorize("Invalid task number!", RED_TEXT()));
             }
-        } catch (Exception e) {
-            System.out.println(colorize("Invalid task number!", RED_TEXT()));
         }
     }
 
@@ -189,16 +193,16 @@ public class TimeOut {
         }
         System.out.println(colorize("] or press enter to cancel: ",MAGENTA_TEXT()));
         String command = input.nextLine();
-        try {
-            if (command.length() > 0) {
-                int taskNum = Integer.parseInt(command) - 1;
+        if (command.length() > 0) {
+            int taskNum = Integer.parseInt(command) - 1;
+            try {
                 Task task = taskList.get(taskNum);
                 editLabel(task);
                 editDate(task);
-                System.out.println(colorize("Task successfully updated!",GREEN_TEXT()));
+                System.out.println(colorize("Task successfully updated!", GREEN_TEXT()));
+            } catch (InvalidIndexException e) {
+                System.out.println(colorize("Invalid task number!",RED_TEXT()));
             }
-        } catch (Exception e) {
-            System.out.println(colorize("Invalid task number!",RED_TEXT()));
         }
     }
 
@@ -210,10 +214,13 @@ public class TimeOut {
         System.out.println(colorize(" - Please enter a new name, or press enter to keep the current name: ",
                 MAGENTA_TEXT()));
         String labelInput = input.nextLine();
-        if (labelInput.length() > 0) {
+
+        try {
             task.setLabel(labelInput);
             System.out.print(colorize("Task name updated to: ", GREEN_TEXT()));
             System.out.println(labelInput);
+        } catch (LabelLengthException e) {
+            return;
         }
     }
 
@@ -226,10 +233,15 @@ public class TimeOut {
             System.out.print(colorize("Please enter a new due date as DD, DD-MM, or DD-MM-YYYY, ",
                     MAGENTA_TEXT()));
             System.out.println(colorize("or press enter if you don't want to edit the date: ", MAGENTA_TEXT()));
-            if (captureDate(task)) {
+            try {
+                captureDate(task);
                 System.out.print(colorize("Due date updated to: ", GREEN_TEXT()));
                 System.out.println(task.getDueDateString());
                 break;
+            } catch (EmptyDateException e) {
+                break;
+            } catch (Exception e) {
+                System.out.println(colorize("Date format invalid!",RED_TEXT()));
             }
         }
     }
@@ -237,28 +249,34 @@ public class TimeOut {
     // MODIFIES: task
     // EFFECTS: Captures user input to get a due date for a new task
     private void addDate(Task task) {
-        do {
+        while (true) {
             System.out.print(colorize("Please enter a date for the new task as DD, DD-MM, or DD-MM-YYYY, ",
                     MAGENTA_TEXT()));
             System.out.println(colorize("or press enter if the task has no due date: ",MAGENTA_TEXT()));
-        } while (!captureDate(task));
+
+            try {
+                captureDate(task);
+                break;
+            } catch (EmptyDateException e) {
+                break;
+            } catch (Exception e) {
+                System.out.println(colorize("Date format invalid!",RED_TEXT()));
+            }
+        }
 
     }
 
     // MODIFIES: task
-    // EFFECTS: Captures user input for due date, returns true if it was successful
-    private boolean captureDate(Task task) {
+    // EFFECTS: Captures user input for due date
+    //          Throws EmptyDateException if no date is entered
+    private void captureDate(Task task) throws EmptyDateException {
         String dateInput = input.nextLine();
         if (dateInput.length() > 0) {
-            try {
-                task.setDueDate(parseDate(dateInput));
-                return true;
-            } catch (Exception e) {
-                System.out.println(colorize("Date format invalid!",RED_TEXT()));
-                return false;
-            }
+            task.setDueDate(parseDate(dateInput));
+        } else {
+            throw new EmptyDateException();
         }
-        return true;
+
     }
 
     // EFFECTS: Parses an input string to generate a valid date
@@ -293,6 +311,10 @@ public class TimeOut {
             System.out.println(colorize("Tasks loaded successfully from file " + SAVE_DATA_PATH, GREEN_TEXT()));
         } catch (IOException e) {
             System.out.println(colorize("ERROR: Unable to read from file " + SAVE_DATA_PATH, RED_TEXT()));
+        } catch (InvalidJsonException e) {
+            System.out.println(colorize("ERROR: Invalid JSON in file " + SAVE_DATA_PATH + ", file deleted",
+                    RED_TEXT()));
+            readerWriter.delete();
         }
     }
 

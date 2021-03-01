@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.InvalidIndexException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,11 +23,15 @@ public class TaskList {
         taskList.add(task);
     }
 
-    // REQUIRES: id must be a valid index in the task list
     // MODIFIES: this
-    // EFFECTS: Removes task with given id from task list
-    public void complete(int id) {
-        taskList.remove(id);
+    // EFFECTS: Removes task with given index from task list
+    //          Throws InvalidIndexException if the given index does not exist in the list
+    public void complete(int index) throws InvalidIndexException {
+        try {
+            taskList.remove(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new InvalidIndexException();
+        }
     }
 
     // MODIFIES: this
@@ -35,9 +40,8 @@ public class TaskList {
         Collections.sort(taskList);
     }
 
-    // REQUIRES: At least one task must be in the task list
     // EFFECTS: Returns the maximum number of days until a task is due. Tasks due > 5 years in the future do not count
-    //          towards the maximum. Always returns >=0.
+    //          towards the maximum. Always returns >=0, and will return 0 if no tasks in list.
     public int getMaxDaysUntilDue() {
         int maxDaysLeft = 0;
         for (Task each: taskList) {
@@ -78,10 +82,14 @@ public class TaskList {
         return taskList.size();
     }
 
-    // REQUIRES: id must be a valid index in the task list
-    // EFFECTS: Returns the task based on id
-    public Task get(int id) {
-        return taskList.get(id);
+    // EFFECTS: Returns the task based on index
+    //          Throws InvalidIndexException if the given index does not exist in the list
+    public Task get(int index) throws InvalidIndexException {
+        try {
+            return taskList.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new InvalidIndexException();
+        }
     }
 
 

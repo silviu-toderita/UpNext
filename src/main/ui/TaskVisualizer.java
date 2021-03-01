@@ -1,5 +1,6 @@
 package ui;
 
+import exceptions.InvalidIndexException;
 import model.Task;
 import model.TaskList;
 
@@ -56,7 +57,12 @@ public class TaskVisualizer {
         int maxDaysLeft = taskList.getMaxDaysUntilDue();
         String output = "";
         for (int i = 0; i < taskList.size(); i++) {
-            Task task = taskList.get(i);
+            Task task = null;
+            try {
+                task = taskList.get(i);
+            } catch (InvalidIndexException e) {
+                e.printStackTrace();
+            }
             output = output.concat("[");
             output = output.concat(String.valueOf(i + 1));
             output = output.concat("]");

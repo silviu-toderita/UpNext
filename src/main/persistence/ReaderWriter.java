@@ -1,5 +1,6 @@
 package persistence;
 
+import exceptions.InvalidJsonException;
 import model.Task;
 import model.TaskList;
 import org.json.JSONArray;
@@ -38,7 +39,7 @@ public class ReaderWriter {
     // MODIFIES: this
     // EFFECTS: Read from the file path and return a list of tasks from the JSON in that file
     //          If there is any error in reading from the file, throw IOException
-    public TaskList read() throws IOException {
+    public TaskList read() throws IOException, InvalidJsonException {
         StringBuilder rawData = new StringBuilder();
 
         try (Stream<String> stream = Files.lines(Paths.get(path), StandardCharsets.UTF_8)) {
@@ -49,8 +50,19 @@ public class ReaderWriter {
         return parseTaskList(jsonArray);
     }
 
+    // EFFECTS: Deletes the file at the path
+    public void delete() {
+        File file = new File(path);
+        try {
+            file.delete();
+        } catch (Exception e) {
+            return;
+        }
+    }
+
     // EFFECTS: Return a list of tasks from the given JSON array
-    private TaskList parseTaskList(JSONArray jsonArray) {
+    //          Throws InvalidJsonException when there is invalid JSON data in the array
+    private TaskList parseTaskList(JSONArray jsonArray) throws InvalidJsonException {
         TaskList taskList = new TaskList();
         for (Object each : jsonArray) {
             Task task = new Task((JSONObject)each);
