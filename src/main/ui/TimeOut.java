@@ -220,7 +220,7 @@ public class TimeOut {
             System.out.print(colorize("Task name updated to: ", GREEN_TEXT()));
             System.out.println(labelInput);
         } catch (LabelLengthException e) {
-            return;
+            // Given label is zero-length, skip editing label
         }
     }
 

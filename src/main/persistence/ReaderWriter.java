@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 // Reader/writer object for saving/loading application state to/from a JSON file
 public class ReaderWriter {
     private static final int INDENT_FACTOR = 4;
-    private PrintWriter writer;
     private String path;
 
     // EFFECTS: Creates a ReaderWriter with given file path
@@ -28,10 +27,10 @@ public class ReaderWriter {
     }
 
     // MODIFIES: this
-    // EFFECTS: Write the given tasklist to the file path.
+    // EFFECTS: Write the given TaskList to the file path.
     //          If the file path is not valid, throw FileNotFoundException
     public void write(TaskList taskList) throws FileNotFoundException {
-        writer = new PrintWriter(new File(path));
+        PrintWriter writer = new PrintWriter(new File(path));
         JSONArray jsonArray = taskList.serialize();
         writer.print(jsonArray.toString(INDENT_FACTOR));
         writer.close();
@@ -48,7 +47,7 @@ public class ReaderWriter {
             stream.forEach(s -> rawData.append(s));
         }
 
-        JSONArray jsonArray = null;
+        JSONArray jsonArray;
         try {
             jsonArray = new JSONArray(rawData.toString());
             return parseTaskList(jsonArray);
