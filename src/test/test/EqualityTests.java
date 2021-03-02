@@ -25,7 +25,7 @@ public abstract class EqualityTests {
         assertEquals(dayDate0, cal.get(Calendar.DATE));
     }
 
-    // EFFECTS: Asserts equality of 2 tasks
+    // EFFECTS: Asserts equality of 2 tasks by their attributes
     protected void assertEqualTask(Task task0, Task task1) {
         assertEquals(task0.getLabel(), task1.getLabel());
         assertEqualDate(task0.getDueDate(), task1.getDueDate());

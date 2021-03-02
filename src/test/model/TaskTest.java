@@ -188,11 +188,6 @@ public class TaskTest extends EqualityTests {
     }
 
     @Test
-    public void testGetDueDateStringEmpty() {
-        assertEquals("No Due Date",taskNoDueDate.getDueDateString());
-    }
-
-    @Test
     public void testGetDueDateString() {
         try {
             taskDueDate = new Task("Homework", testDateA);

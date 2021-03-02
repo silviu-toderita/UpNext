@@ -26,9 +26,9 @@ public class ReaderWriter {
         this.path = path;
     }
 
-    // MODIFIES: this
+    // MODIFIES: File at path
     // EFFECTS: Write the given TaskList to the file path.
-    //          If the file path is not valid, throw FileNotFoundException
+    //          Throws FileNotFoundException if the file path is not valid
     public void write(TaskList taskList) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(new File(path));
         JSONArray jsonArray = taskList.serialize();
@@ -36,10 +36,9 @@ public class ReaderWriter {
         writer.close();
     }
 
-    // MODIFIES: this
     // EFFECTS: Read from the file path and return a list of tasks from the JSON in that file
     //          Throws IOException if there is any error in reading from the file
-    //          Throws InvalidJsonFileException if JSON file was invalid and deleted
+    //          Throws InvalidJsonFileException if JSON file was invalid (file will be deleted before exception thrown)
     public TaskList read() throws IOException, InvalidJsonFileException {
         StringBuilder rawData = new StringBuilder();
 
@@ -65,7 +64,6 @@ public class ReaderWriter {
     }
 
     // EFFECTS: Return a list of tasks from the given JSON array
-    //          Throws InvalidJsonException when there is invalid JSON data in the array
     private TaskList parseTaskList(JSONArray jsonArray) {
         TaskList taskList = new TaskList();
         for (Object each : jsonArray) {

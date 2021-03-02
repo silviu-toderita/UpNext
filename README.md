@@ -12,7 +12,7 @@ This project is interesting to me because chronological task-management has alwa
 
 - As a user, I want to be able to add a task to TimeOut
 - As a user, I want to have the option of specifying a due date for a task when adding it to TimeOut
-- As a user, I want to change an existing task
+- As a user, I want to edit an existing task
 - As a user, I want to mark a task as completed
 - As a user, I want to view my remaining tasks chronologically
 - As a user, I want my tasks to save automatically whenever I add a new task, change a task, or complete a task

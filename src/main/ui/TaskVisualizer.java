@@ -16,6 +16,7 @@ public class TaskVisualizer {
     private static final int DAYS_RED_THRESHOLD = 0;
     private static final int DAYS_YELLOW_THRESHOLD = 3;
     private static final int DISTANT_THRESHOLD = 60;
+    private static final int VERY_DISTANT_THRESHOLD = 1826;
 
     private static final String TASK_LIST_HEADER = "Here's what's on your plate: ";
     private static final String DONE_MESSAGE = "\uD83C\uDFDD You're all caught up, take a break! \uD83C\uDFDD"; //
@@ -38,20 +39,20 @@ public class TaskVisualizer {
         output = output.concat(TASK_LIST_HEADER);
         output = output.concat("\n");
 
-        output = output.concat(generateHorizontalDivider(MAX_CHAR_WIDTH));
+        output = output.concat(generateLine("-",MAX_CHAR_WIDTH) + "\n");
         if (taskList.size() == 0) {
             output = output.concat(DONE_MESSAGE);
             output = output.concat("\n");
         } else {
             output = output.concat(allTasks());
         }
-        output = output.concat(generateHorizontalDivider(MAX_CHAR_WIDTH));
+        output = output.concat(generateLine("-",MAX_CHAR_WIDTH) + "\n");
 
         return output;
     }
 
     // EFFECT: Return a string representing all tasks in a chronological task chart
-    public String allTasks() {
+    private String allTasks() {
         taskList.sort();
 
         int maxNameLength = taskList.getMaxLabelLength();
@@ -81,11 +82,13 @@ public class TaskVisualizer {
         int daysLeft = task.getDaysUntilDue();
 
         output = output.concat(colorizeDeadline(name,daysLeft));
-        output = output.concat(generateSpaces(spacesRequiredAfterName));
+        output = output.concat(generateLine(" ",spacesRequiredAfterName));
         output = output.concat(colorize("||",BLUE_TEXT()));
         output = output.concat(generateChart(daysLeft, maxDaysLeft, chartLength));
         output = output.concat("  ");
-        output = output.concat(colorizeDeadline(task.getDueDateString(), daysLeft));
+        if (daysLeft < VERY_DISTANT_THRESHOLD) {
+            output = output.concat(colorizeDeadline(task.getDueDateString(), daysLeft));
+        }
 
         return output;
     }
@@ -105,15 +108,16 @@ public class TaskVisualizer {
         return output;
     }
 
-    // EFFECT: Generate a chart for each task that shows a chronological view of the time left until a task is due
-    private String generateChart(int daysLeft, int maxDaysLeft, int length) {
+    // EFFECT: Generate a bar chart for each task that shows a chronological view of the time left until a task is due
+    private String generateChart(int daysLeft, int maxDaysLeft, int chartLength) {
         if (daysLeft > 0 & daysLeft < DISTANT_THRESHOLD) {
             float percentOfMax = (float) daysLeft / maxDaysLeft;
-
-            String output = generateChartUpcomingTasks((percentOfMax * length) - 5);
-            return output.concat(colorizeDeadline(">|=|", daysLeft));
+            int length = Math.round((percentOfMax * chartLength) - 5);
+            return generateChartUpcomingTasks(length);
+        } else if (daysLeft >= VERY_DISTANT_THRESHOLD) {
+            return " ";
         } else if (daysLeft >= DISTANT_THRESHOLD) {
-            return generateChartDistantTasks(length);
+            return generateChartDistantTasks(chartLength);
         } else if (daysLeft == 0) {
             return (colorizeDeadline("DUE TODAY:", 0));
         } else {
@@ -128,39 +132,23 @@ public class TaskVisualizer {
         }
     }
 
-    // EFFECT: Generate a chart for tasks in the next year
-    private String generateChartUpcomingTasks(float charsUntilDue) {
-        String output = "";
-        for (int i = 0; i < charsUntilDue; i++) {
-            output = output.concat("+");
-        }
-        return output;
+    // EFFECT: Generate a bar for tasks within the distant threshold
+    private String generateChartUpcomingTasks(int length) {
+        String output = generateLine("+", length);
+        return output.concat(">|=|");
     }
 
-    // EFFECT: Generate a chart for tasks further away than the distant threshold
+    // EFFECT: Generate a bar for tasks further away than the distant threshold
     private String generateChartDistantTasks(int length) {
-        String output = "";
-        for (int i = 0; i < length; i++) {
-            output = output.concat(" ");
-        }
-        output = output.concat(" |=|");
-        return output;
+        String output = generateLine(" ", length);
+        return output.concat(" |=|");
     }
 
-    // EFFECT: Return a string of hyphens with given length
-    private String generateHorizontalDivider(int length) {
+    // EFFECT: Return a string of the given character with given length
+    private String generateLine(String character, int length) {
         String output = "";
         for (int i = 0; i < length; i++) {
-            output = output.concat("-");
-        }
-        return output.concat("\n");
-    }
-
-    // EFFECT: Return a string of spaces with given length
-    private String generateSpaces(int length) {
-        String output = "";
-        for (int i = 0; i < length; i++) {
-            output = output.concat(" ");
+            output = output.concat(character);
         }
         return output;
     }

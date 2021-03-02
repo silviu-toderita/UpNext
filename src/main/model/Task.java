@@ -39,7 +39,6 @@ public class Task implements Comparable<Task> {
     }
 
     // EFFECTS: Creates a task based on the data in the given JSON object
-    //          Throws InvalidJsonException when there is invalid JSON data in the given object
     public Task(JSONObject jsonObject) {
         this.label = jsonObject.getString("label");
 
@@ -70,16 +69,10 @@ public class Task implements Comparable<Task> {
         this.dueDate = dueDate;
     }
 
-    // EFFECTS: Returns this task's due date as a string. For example: "Thu 11 Feb 2021". If due date is over 5 years in
-    //          the future, returns "No Due Date"
+    // EFFECTS: Returns this task's due date as a string. For example: "Thu 11 Feb 2021".
     public String getDueDateString() {
         Calendar calDue = Calendar.getInstance();
         calDue.setTime(dueDate);
-        Calendar calToday = Calendar.getInstance();
-        if (calDue.get(Calendar.YEAR) >= calToday.get(Calendar.YEAR) + 5) {
-            return "No Due Date";
-        }
-
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy");
         return sdf.format(calDue.getTime());
     }

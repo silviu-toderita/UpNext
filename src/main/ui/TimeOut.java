@@ -12,7 +12,7 @@ import java.util.*;
 import static com.diogonunes.jcolor.Ansi.colorize;
 import static com.diogonunes.jcolor.Attribute.*;
 
-// Time Out Application UI
+// TimeOut Application UI
 public class TimeOut {
     private static final String NEW_COMMAND = "new";
     private static final String COMPLETE_COMMAND = "complete";
@@ -55,7 +55,7 @@ public class TimeOut {
         while (true) {
             System.out.println(formatCommands());
 
-            String command = processInput(input.nextLine());
+            String command = processCommandInput(input.nextLine());
             if (command.equals(QUIT_COMMAND)) {
                 System.out.println(randomGoodbye());
                 break;
@@ -93,6 +93,7 @@ public class TimeOut {
 
     // MODIFIES: this
     // EFFECTS: Process the given command
+    //          Throws InvalidCommandException if the given command is not recognized
     private void processCommand(String command) throws InvalidCommandException {
         switch (command) {
             case NEW_COMMAND:
@@ -118,7 +119,7 @@ public class TimeOut {
 
     // EFFECTS: Returns a command based on user input. Accepts first letter of a command or the entire command,
     //          case-insensitive. Removes leading/trailing spaces
-    private String processInput(String input) {
+    private String processCommandInput(String input) {
         String inputClean = input.toLowerCase().trim();
         String output = inputClean;
         if (inputClean.equals(NEW_COMMAND.substring(0,1))) {
@@ -186,7 +187,7 @@ public class TimeOut {
     }
 
     // MODIFIES: this
-    // EFFECTS: Captures user input to modify a task
+    // EFFECTS: Captures user input to edit a task
     private void editTask() {
         System.out.print(colorize("Please enter the task number you would like to edit [", MAGENTA_TEXT()));
         System.out.print("1");
@@ -211,7 +212,7 @@ public class TimeOut {
     }
 
     // MODIFIES: task
-    // EFFECTS: Captures user input to modify a task name
+    // EFFECTS: Captures user input to edit a task name
     private void editLabel(Task task) {
         System.out.print(colorize("You've selected to edit: ", MAGENTA_TEXT()));
         System.out.print(task.getLabel());
@@ -229,7 +230,7 @@ public class TimeOut {
     }
 
     // MODIFIES: task
-    // EFFECTS: Captures user input to modify a due date for a task
+    // EFFECTS: Captures user input to edit a due date for a task
     private void editDate(Task task) {
         System.out.print(colorize("The due date for the selected task is: ", MAGENTA_TEXT()));
         System.out.println(task.getDueDateString());
@@ -255,7 +256,6 @@ public class TimeOut {
         while (true) {
             System.out.println(colorize("Please enter a date for the new task, or press enter to skip. "
                             + DATE_FORMAT_MESSAGE, MAGENTA_TEXT()));
-
             try {
                 captureDate(task);
                 break;
@@ -346,7 +346,7 @@ public class TimeOut {
         return generateDateFromDayOfWeek(inputDay);
     }
 
-    // EFFECT: Returns the next date matching the given dayOfWeek (including day)
+    // EFFECT: Returns the next date matching the given dayOfWeek (including today)
     private Date generateDateFromDayOfWeek(int dayOfWeek) {
         Calendar cal = Calendar.getInstance();
         int dayDifference = dayOfWeek - cal.get(Calendar.DAY_OF_WEEK);
