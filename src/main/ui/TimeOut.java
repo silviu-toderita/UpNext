@@ -60,14 +60,11 @@ public class TimeOut {
                 System.out.println(randomGoodbye());
                 break;
             } else {
-                try {
-                    processCommand(command);
-                    System.out.println(taskVisualizer.showTasks());
-                } catch (InvalidCommandException e) {
+                if (!processCommand(command)) {
                     System.out.println(colorize("Sorry, I didn't recognize that command!",RED_TEXT()));
                 }
             }
-
+            System.out.println(taskVisualizer.showTasks());
         }
     }
 
@@ -92,9 +89,8 @@ public class TimeOut {
     }
 
     // MODIFIES: this
-    // EFFECTS: Process the given command
-    //          Throws InvalidCommandException if the given command is not recognized
-    private void processCommand(String command) throws InvalidCommandException {
+    // EFFECTS: Process the given command, return true if command recognized or false if command invalid
+    private boolean processCommand(String command) {
         switch (command) {
             case NEW_COMMAND:
                 addTask();
@@ -113,8 +109,9 @@ public class TimeOut {
                 }
                 break;
             default:
-                throw new InvalidCommandException();
+                return false;
         }
+        return true;
     }
 
     // EFFECTS: Returns a command based on user input. Accepts first letter of a command or the entire command,
@@ -238,11 +235,10 @@ public class TimeOut {
             System.out.println(colorize("Please enter a new due date or press enter to keep current date. "
                     + DATE_FORMAT_MESSAGE, MAGENTA_TEXT()));
             try {
-                captureDate(task);
-                System.out.print(colorize("Due date updated to: ", GREEN_TEXT()));
-                System.out.println(task.getDueDateString());
-                break;
-            } catch (EmptyDateException e) {
+                if (captureDate(task)) {
+                    System.out.print(colorize("Due date updated to: ", GREEN_TEXT()));
+                    System.out.println(task.getDueDateString());
+                }
                 break;
             } catch (Exception e) {
                 System.out.println(colorize("Date format invalid!",RED_TEXT()));
@@ -256,29 +252,24 @@ public class TimeOut {
         while (true) {
             System.out.println(colorize("Please enter a date for the new task, or press enter to skip. "
                             + DATE_FORMAT_MESSAGE, MAGENTA_TEXT()));
-            try {
-                captureDate(task);
+            if (captureDate(task)) {
                 break;
-            } catch (EmptyDateException e) {
-                break;
-            } catch (Exception e) {
-                System.out.println(colorize("Date format invalid!",RED_TEXT()));
+            } else {
+                System.out.println(colorize("Date format invalid!", RED_TEXT()));
             }
         }
 
     }
 
     // MODIFIES: task
-    // EFFECTS: Captures user input for due date
-    //          Throws EmptyDateException if no date is entered
-    private void captureDate(Task task) throws EmptyDateException {
+    // EFFECTS: Captures user input for due date. Returns false only if date is empty
+    private boolean captureDate(Task task) {
         String dateInput = input.nextLine();
         if (dateInput.length() > 0) {
             task.setDueDate(parseDate(dateInput));
-        } else {
-            throw new EmptyDateException();
+            return true;
         }
-
+        return false;
     }
 
     // EFFECTS: Parses an input string to generate a valid date

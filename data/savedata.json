@@ -2,6 +2,12 @@
     {
         "month": 2,
         "year": 2021,
+        "label": "CPSC121 READING and Quiz 8",
+        "day": 9
+    },
+    {
+        "month": 2,
+        "year": 2021,
         "label": "CPEN Read DDS 101, Technical Tutorial",
         "day": 8
     },
@@ -9,12 +15,6 @@
         "month": 2,
         "year": 2021,
         "label": "ENGL Formal Report Introduction",
-        "day": 9
-    },
-    {
-        "month": 2,
-        "year": 2021,
-        "label": "CPSC121 READING and Quiz 8",
         "day": 9
     },
     {
