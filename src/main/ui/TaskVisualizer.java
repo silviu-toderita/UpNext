@@ -15,13 +15,14 @@ public class TaskVisualizer {
 
     private static final int DAYS_RED_THRESHOLD = 0;
     private static final int DAYS_YELLOW_THRESHOLD = 3;
-    private static final int DISTANT_THRESHOLD = 30;
+    private static final int DISTANT_THRESHOLD = 60;
 
     private static final String TASK_LIST_HEADER = "Here's what's on your plate: ";
     private static final String DONE_MESSAGE = "\uD83C\uDFDD You're all caught up, take a break! \uD83C\uDFDD"; //
 
     private TaskList taskList;
 
+    // EFFECT: Creates a taskVisualizer with a given taskList
     public TaskVisualizer(TaskList taskList) {
         this.taskList = taskList;
     }
@@ -74,14 +75,14 @@ public class TaskVisualizer {
     private String eachTask(Task task, int maxNameLength, int maxDaysLeft) {
         String name = task.getLabel();
         int spacesRequiredAfterName = maxNameLength - name.length();
-        int chartLength = MAX_CHAR_WIDTH - maxNameLength - 26;
+        int chartLength = MAX_CHAR_WIDTH - maxNameLength - 27;
         String output = "";
 
         int daysLeft = task.getDaysUntilDue();
 
         output = output.concat(colorizeDeadline(name,daysLeft));
         output = output.concat(generateSpaces(spacesRequiredAfterName));
-        output = output.concat("|");
+        output = output.concat(colorize("||",BLUE_TEXT()));
         output = output.concat(generateChart(daysLeft, maxDaysLeft, chartLength));
         output = output.concat("  ");
         output = output.concat(colorizeDeadline(task.getDueDateString(), daysLeft));
@@ -109,7 +110,7 @@ public class TaskVisualizer {
         if (daysLeft > 0 & daysLeft < DISTANT_THRESHOLD) {
             float percentOfMax = (float) daysLeft / maxDaysLeft;
 
-            String output = generateChartUpcomingTasks((percentOfMax * length) - 10);
+            String output = generateChartUpcomingTasks((percentOfMax * length) - 5);
             return output.concat(colorizeDeadline(">|=|", daysLeft));
         } else if (daysLeft >= DISTANT_THRESHOLD) {
             return generateChartDistantTasks(length);

@@ -18,6 +18,10 @@ public class TimeOut {
     private static final String COMPLETE_COMMAND = "complete";
     private static final String EDIT_COMMAND = "edit";
     private static final String QUIT_COMMAND = "quit";
+
+    private static final String DATE_FORMAT_MESSAGE = "You can type things like 'today', 'tomorrow', 'monday', 'mon',"
+            + " '25', '25-12', or '25-12-2021':";
+
     private static final String SAVE_DATA_PATH = "./data/savedata.json";
 
     private TaskList taskList;
@@ -230,9 +234,8 @@ public class TimeOut {
         System.out.print(colorize("The due date for the selected task is: ", MAGENTA_TEXT()));
         System.out.println(task.getDueDateString());
         while (true) {
-            System.out.print(colorize("Please enter a new due date as DD, DD-MM, or DD-MM-YYYY, ",
-                    MAGENTA_TEXT()));
-            System.out.println(colorize("or press enter if you don't want to edit the date: ", MAGENTA_TEXT()));
+            System.out.println(colorize("Please enter a new due date or press enter to keep current date. "
+                    + DATE_FORMAT_MESSAGE, MAGENTA_TEXT()));
             try {
                 captureDate(task);
                 System.out.print(colorize("Due date updated to: ", GREEN_TEXT()));
@@ -250,9 +253,8 @@ public class TimeOut {
     // EFFECTS: Captures user input to get a due date for a new task
     private void addDate(Task task) {
         while (true) {
-            System.out.print(colorize("Please enter a date for the new task as DD, DD-MM, or DD-MM-YYYY, ",
-                    MAGENTA_TEXT()));
-            System.out.println(colorize("or press enter if the task has no due date: ",MAGENTA_TEXT()));
+            System.out.println(colorize("Please enter a date for the new task, or press enter to skip. "
+                            + DATE_FORMAT_MESSAGE, MAGENTA_TEXT()));
 
             try {
                 captureDate(task);
@@ -281,25 +283,77 @@ public class TimeOut {
 
     // EFFECTS: Parses an input string to generate a valid date
     private Date parseDate(String input) {
+        String inputClean = input.toLowerCase().trim();
+        Date date;
+
+        if (Character.isDigit(inputClean.charAt(0))) {
+            date =  parseDateNumeric(inputClean);
+        } else {
+            date = parseDateAlpha(inputClean);
+        }
+
+        return date;
+    }
+
+    // EFFECT: Parses a numeric input string to generate a valid date
+    private Date parseDateNumeric(String input) {
         Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day;
 
         if (input.length() <= 2) {
-            day = Integer.parseInt(input);
+            cal.set(Calendar.DATE,Integer.parseInt(input));
         } else if (input.length() <= 5) {
             int hyphenPosition = input.indexOf('-');
-            day = Integer.parseInt(input.substring(0,hyphenPosition));
-            month = Integer.parseInt(input.substring(hyphenPosition + 1)) - 1;
+            cal.set(Calendar.DATE,Integer.parseInt(input.substring(0,hyphenPosition)));
+            cal.set(Calendar.MONTH,Integer.parseInt(input.substring(hyphenPosition + 1)) - 1);
         } else {
             int firstHyphenPosition = input.indexOf('-');
             int secondHyphenPosition = input.lastIndexOf('-');
-            day = Integer.parseInt(input.substring(0,firstHyphenPosition));
-            month = Integer.parseInt(input.substring(firstHyphenPosition + 1, secondHyphenPosition)) - 1;
-            year = Integer.parseInt(input.substring(secondHyphenPosition + 1));
+            cal.set(Calendar.DATE,Integer.parseInt(input.substring(0,firstHyphenPosition)));
+            cal.set(Calendar.MONTH,Integer.parseInt(input.substring(firstHyphenPosition + 1, secondHyphenPosition))
+                    - 1);
+            cal.set(Calendar.YEAR,Integer.parseInt(input.substring(secondHyphenPosition + 1)));
         }
-        cal.set(year, month, day,23,59,59);
+
+        return cal.getTime();
+    }
+
+    // EFFECT: Parses an alphabetic input string to generate a valid date
+    private Date parseDateAlpha(String input) {
+        Calendar cal = Calendar.getInstance();
+        int inputDay;
+
+        if (input.equals("monday") | input.equals("mon")) {
+            inputDay = Calendar.MONDAY;
+        } else if (input.equals("tuesday") | input.equals("tue")) {
+            inputDay = Calendar.TUESDAY;
+        } else if (input.equals("wednesday") | input.equals("wed")) {
+            inputDay = Calendar.WEDNESDAY;
+        } else if (input.equals("thursday") | input.equals("thu")) {
+            inputDay = Calendar.THURSDAY;
+        } else if (input.equals("friday") | input.equals("fri")) {
+            inputDay = Calendar.FRIDAY;
+        } else if (input.equals("saturday") | input.equals("sat")) {
+            inputDay = Calendar.SATURDAY;
+        } else if (input.equals("sunday") | input.equals("sun")) {
+            inputDay = Calendar.SUNDAY;
+        } else if (input.equals("tomorrow")) {
+            cal.add(Calendar.DATE, 1);
+            return cal.getTime();
+        } else {
+            return cal.getTime();
+        }
+
+        return generateDateFromDayOfWeek(inputDay);
+    }
+
+    // EFFECT: Returns the next date matching the given dayOfWeek (including day)
+    private Date generateDateFromDayOfWeek(int dayOfWeek) {
+        Calendar cal = Calendar.getInstance();
+        int dayDifference = dayOfWeek - cal.get(Calendar.DAY_OF_WEEK);
+        if (dayDifference < 0) {
+            dayDifference += 7;
+        }
+        cal.add(Calendar.DATE, dayDifference);
         return cal.getTime();
     }
 

@@ -30,11 +30,11 @@ public class TaskTest extends EqualityTests {
         }
         Calendar cal = Calendar.getInstance();
 
-        cal.set(2030,Calendar.DECEMBER,31,23,59,59);
+        cal.add(Calendar.YEAR,10);
         blankDate = cal.getTime();
-        cal.set(2020,Calendar.MARCH,23,23,59,59);
+        cal.set(2020,Calendar.MARCH,23);
         testDateA = cal.getTime();
-        cal.set(2021,Calendar.APRIL,20,23,59,59);
+        cal.set(2021,Calendar.APRIL,20);
         testDateB = cal.getTime();
     }
 
@@ -87,10 +87,8 @@ public class TaskTest extends EqualityTests {
         assertEquals("test label",taskDueDate.getLabel());
 
         Calendar cal = Calendar.getInstance();
-        cal.setTime(taskDueDate.getDueDate());
-        assertEquals(2021, cal.get(Calendar.YEAR));
-        assertEquals(Calendar.APRIL, cal.get(Calendar.MONTH));
-        assertEquals(20, cal.get(Calendar.DATE));
+        cal.set(2021,Calendar.APRIL,20);
+        assertEqualDate(cal.getTime(), taskDueDate.getDueDate());
 
     }
 
