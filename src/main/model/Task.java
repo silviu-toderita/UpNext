@@ -1,12 +1,9 @@
 package model;
 
-import exceptions.InvalidJsonException;
 import exceptions.LabelLengthException;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -43,20 +40,16 @@ public class Task implements Comparable<Task> {
 
     // EFFECTS: Creates a task based on the data in the given JSON object
     //          Throws InvalidJsonException when there is invalid JSON data in the given object
-    public Task(JSONObject jsonObject) throws InvalidJsonException {
-        try {
-            this.label = jsonObject.getString("label");
+    public Task(JSONObject jsonObject) {
+        this.label = jsonObject.getString("label");
 
-            int year = jsonObject.getInt("year");
-            int month = jsonObject.getInt("month");
-            int day = jsonObject.getInt("day");
+        int year = jsonObject.getInt("year");
+        int month = jsonObject.getInt("month");
+        int day = jsonObject.getInt("day");
 
-            Calendar cal = Calendar.getInstance();
-            cal.set(year,month,day);
-            this.dueDate = setDefaultTime(cal.getTime());
-        } catch (JSONException e) {
-            throw new InvalidJsonException();
-        }
+        Calendar cal = Calendar.getInstance();
+        cal.set(year,month,day);
+        this.dueDate = setDefaultTime(cal.getTime());
 
     }
 
@@ -93,11 +86,18 @@ public class Task implements Comparable<Task> {
 
     // EFFECTS: Returns the number of days until this task is due
     public int getDaysUntilDue() {
-        Calendar calDue = Calendar.getInstance();
-        calDue.setTime(dueDate);
-        Calendar calToday = Calendar.getInstance();
-        long daysUntilDue = ChronoUnit.DAYS.between(calToday.toInstant(), calDue.toInstant());
-        return (int)daysUntilDue;
+        Calendar cal = Calendar.getInstance();
+        int thisYear = cal.get(Calendar.YEAR);
+        int thisDay = cal.get(Calendar.DAY_OF_YEAR);
+
+        cal.setTime(dueDate);
+        int dueYear = cal.get(Calendar.YEAR);
+        int dueDay = cal.get(Calendar.DAY_OF_YEAR);
+
+        int yearDifference = dueYear - thisYear;
+        int dayDifference = dueDay - thisDay;
+
+        return dayDifference + (yearDifference * 365);
     }
 
     // EFFECTS: Returns a JSON object that represents this task

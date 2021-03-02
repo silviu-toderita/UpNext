@@ -1,17 +1,19 @@
 package model;
 
-import exceptions.InvalidJsonException;
+
 import exceptions.LabelLengthException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import test.EqualityTests;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
 
 // Tests for Task class
-public class TaskTest extends DateTest {
+public class TaskTest extends EqualityTests {
 
     Task taskNoDueDate;
     Task taskDueDate;
@@ -48,7 +50,7 @@ public class TaskTest extends DateTest {
             taskNoDueDate = new Task("");
             fail("Expected Label Length Exception");
         } catch (LabelLengthException e) {
-            // Expected Behaviour
+            // pass
         }
     }
 
@@ -56,7 +58,6 @@ public class TaskTest extends DateTest {
     public void testMakeTaskWithDueDate() {
         try {
             taskDueDate = new Task("Groceries", testDateA);
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -70,7 +71,7 @@ public class TaskTest extends DateTest {
             taskDueDate = new Task("",testDateA);
             fail("Expected Label Length Exception");
         } catch (LabelLengthException e) {
-            // Expected Behaviour
+            // pass
         }
     }
 
@@ -82,35 +83,15 @@ public class TaskTest extends DateTest {
         jsonObject.put("month",Calendar.APRIL);
         jsonObject.put("day",20);
 
-        try {
-            taskDueDate = new Task(jsonObject);
-            assertEquals("test label",taskDueDate.getLabel());
+        taskDueDate = new Task(jsonObject);
+        assertEquals("test label",taskDueDate.getLabel());
 
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(taskDueDate.getDueDate());
-            assertEquals(2021, cal.get(Calendar.YEAR));
-            assertEquals(Calendar.APRIL, cal.get(Calendar.MONTH));
-            assertEquals(20, cal.get(Calendar.DATE));
-            // Expected Behaviour
-        } catch (InvalidJsonException e) {
-            fail("Invalid JSON Exception");
-        }
-    }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(taskDueDate.getDueDate());
+        assertEquals(2021, cal.get(Calendar.YEAR));
+        assertEquals(Calendar.APRIL, cal.get(Calendar.MONTH));
+        assertEquals(20, cal.get(Calendar.DATE));
 
-    @Test
-    public void testMakeTaskJSONInvalid() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("label","test label");
-        jsonObject.put("yer",2021);
-        jsonObject.put("month",Calendar.APRIL);
-        jsonObject.put("day",20);
-
-        try {
-            taskDueDate = new Task(jsonObject);
-            fail("Expected Invalid JSON Exception");
-        } catch (InvalidJsonException e) {
-            // Expected Behaviour
-        }
     }
 
     @Test
@@ -119,7 +100,6 @@ public class TaskTest extends DateTest {
 
         try {
             taskNoDueDate.setLabel("Volunteering");
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -139,7 +119,6 @@ public class TaskTest extends DateTest {
         } catch (LabelLengthException e) {
             assertEquals("Groceries", taskNoDueDate.getLabel());
             assertEqualDate(blankDate,taskNoDueDate.getDueDate());
-            // Expected Behaviour
         }
 
     }
@@ -148,7 +127,6 @@ public class TaskTest extends DateTest {
     public void testChangeLabelTwice() {
         try {
             taskNoDueDate.setLabel("Volunteering");
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -177,7 +155,6 @@ public class TaskTest extends DateTest {
     public void testChangeDueDate() {
         try {
             taskDueDate = new Task("Groceries", testDateA);
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -205,7 +182,6 @@ public class TaskTest extends DateTest {
         taskNoDueDate.setDueDate(testDateA);
         try {
             taskNoDueDate.setLabel("shenanigans");
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -222,7 +198,6 @@ public class TaskTest extends DateTest {
     public void testGetDueDateString() {
         try {
             taskDueDate = new Task("Homework", testDateA);
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -243,7 +218,6 @@ public class TaskTest extends DateTest {
         calToday.add(Calendar.HOUR, 1);
         try {
             taskDueDate = new Task("Shenanigans",calToday.getTime());
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -255,21 +229,15 @@ public class TaskTest extends DateTest {
     public void testMakeJsonObject() {
         try {
             taskDueDate = new Task("Groceries", testDateA);
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
 
         JSONObject jsonObject = taskDueDate.makeJsonObject();
 
-        try {
-            Task newTask = new Task(jsonObject);
-            assertEquals("Groceries", newTask.getLabel());
-            assertEqualDate(testDateA, newTask.getDueDate());
-            // Expected Behaviour
-        } catch (InvalidJsonException e) {
-            fail("Invalid JSON Exception");
-        }
+        Task newTask = new Task(jsonObject);
+        assertEquals("Groceries", newTask.getLabel());
+        assertEqualDate(testDateA, newTask.getDueDate());
 
     }
 
@@ -277,14 +245,9 @@ public class TaskTest extends DateTest {
     public void testMakeJsonObjectNoDueDate() {
         JSONObject jsonObject = taskNoDueDate.makeJsonObject();
 
-        try {
-            Task newTask = new Task(jsonObject);
-            assertEquals("Groceries", newTask.getLabel());
-            assertEqualDate(blankDate, newTask.getDueDate());
-            // Expected Behaviour
-        } catch (InvalidJsonException e) {
-            fail("Invalid JSON Exception");
-        }
+        Task newTask = new Task(jsonObject);
+        assertEquals("Groceries", newTask.getLabel());
+        assertEqualDate(blankDate, newTask.getDueDate());
 
     }
 
@@ -294,19 +257,17 @@ public class TaskTest extends DateTest {
         calPast.add(Calendar.DATE,-5);
         try {
             taskDueDate = new Task("Shenanigans",calPast.getTime());
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
 
-        assertEquals(-4,taskDueDate.getDaysUntilDue());
+        assertEquals(-5,taskDueDate.getDaysUntilDue());
     }
 
     @Test
     public void testCompareToLaterTask() {
         try {
             taskDueDate = new Task("Shenanigans",testDateA);
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -319,7 +280,6 @@ public class TaskTest extends DateTest {
             taskDueDate = new Task("Shenanigans",testDateA);
             Task taskDueDateSame = new Task("Homework",testDateA);
             assertEquals(0,taskDueDate.compareTo(taskDueDateSame));
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
@@ -329,7 +289,6 @@ public class TaskTest extends DateTest {
     public void testCompareToPastTask() {
         try {
             taskDueDate = new Task("Shenanigans",testDateA);
-            // Expected Behaviour
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }

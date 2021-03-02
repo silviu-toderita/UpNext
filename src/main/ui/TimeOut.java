@@ -175,7 +175,7 @@ public class TimeOut {
                 System.out.print(colorize("The following task has been marked as completed: ", GREEN_TEXT()));
                 System.out.print(name);
                 System.out.println(colorize(" - Great work!", GREEN_TEXT()));
-            } catch (InvalidIndexException e) {
+            } catch (IndexOutOfBoundsException e) {
                 System.out.println(colorize("Invalid task number!", RED_TEXT()));
             }
         }
@@ -200,7 +200,7 @@ public class TimeOut {
                 editLabel(task);
                 editDate(task);
                 System.out.println(colorize("Task successfully updated!", GREEN_TEXT()));
-            } catch (InvalidIndexException e) {
+            } catch (IndexOutOfBoundsException e) {
                 System.out.println(colorize("Invalid task number!",RED_TEXT()));
             }
         }
@@ -311,10 +311,8 @@ public class TimeOut {
             System.out.println(colorize("Tasks loaded successfully from file " + SAVE_DATA_PATH, GREEN_TEXT()));
         } catch (IOException e) {
             System.out.println(colorize("ERROR: Unable to read from file " + SAVE_DATA_PATH, RED_TEXT()));
-        } catch (InvalidJsonException e) {
-            System.out.println(colorize("ERROR: Invalid JSON in file " + SAVE_DATA_PATH + ", file deleted",
-                    RED_TEXT()));
-            readerWriter.delete();
+        } catch (InvalidJsonFileException e) {
+            System.out.println(colorize("ERROR: Invalid file " + SAVE_DATA_PATH + ", deleting", RED_TEXT()));
         }
     }
 

@@ -1,8 +1,6 @@
 package model;
 
-import exceptions.InvalidIndexException;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,13 +23,9 @@ public class TaskList {
 
     // MODIFIES: this
     // EFFECTS: Removes task with given index from task list
-    //          Throws InvalidIndexException if the given index does not exist in the list
-    public void complete(int index) throws InvalidIndexException {
-        try {
-            taskList.remove(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new InvalidIndexException();
-        }
+    //          Throws IndexOutOfBoundsException if the given index does not exist in the list
+    public void complete(int index) throws IndexOutOfBoundsException {
+        taskList.remove(index);
     }
 
     // MODIFIES: this
@@ -40,13 +34,13 @@ public class TaskList {
         Collections.sort(taskList);
     }
 
-    // EFFECTS: Returns the maximum number of days until a task is due. Tasks due > 5 years in the future do not count
-    //          towards the maximum. Always returns >=0, and will return 0 if no tasks in list.
-    public int getMaxDaysUntilDue() {
+    // EFFECTS: Returns the maximum number of days until a task is due. Tasks due > threshold days away are not counted.
+    //          Always returns >=0, and will return 0 if no tasks in list.
+    public int getMaxDaysUntilDue(int threshold) {
         int maxDaysLeft = 0;
         for (Task each: taskList) {
             int daysLeft = each.getDaysUntilDue();
-            if (daysLeft > maxDaysLeft & daysLeft < 1825) {
+            if (daysLeft > maxDaysLeft & daysLeft < threshold) {
                 maxDaysLeft = daysLeft;
             }
         }
@@ -83,13 +77,9 @@ public class TaskList {
     }
 
     // EFFECTS: Returns the task based on index
-    //          Throws InvalidIndexException if the given index does not exist in the list
-    public Task get(int index) throws InvalidIndexException {
-        try {
-            return taskList.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new InvalidIndexException();
-        }
+    //          Throws IndexOutOfBoundsException if the given index does not exist in the list
+    public Task get(int index) throws IndexOutOfBoundsException {
+        return taskList.get(index);
     }
 
 

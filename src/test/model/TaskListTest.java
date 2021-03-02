@@ -1,11 +1,11 @@
 package model;
 
-import exceptions.InvalidIndexException;
-import exceptions.InvalidJsonException;
 import exceptions.LabelLengthException;
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import test.EqualityTests;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
@@ -13,12 +13,14 @@ import java.util.Date;
 
 
 // Tests for TaskList class
-public class TaskListTest extends DateTest {
+public class TaskListTest extends EqualityTests {
 
-    TaskList taskList;
-    Task testTaskA;
-    Task testTaskB;
-    Task testTaskC;
+    public static final int THRESHOLD_DAYS = 30;
+
+    private TaskList taskList;
+    private Task testTaskA;
+    private Task testTaskB;
+    private Task testTaskC;
 
     @BeforeEach
     public void setUp() throws LabelLengthException {
@@ -39,12 +41,7 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         assertEquals(1, taskList.size());
 
-        try {
-            assertEquals(testTaskA, taskList.get(0));
-            // Expected Behaviour
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        assertEquals(testTaskA, taskList.get(0));
 
     }
 
@@ -53,22 +50,18 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         assertEquals(1, taskList.size());
 
-        try {
-            assertEquals(testTaskA, taskList.get(0));
+        assertEquals(testTaskA, taskList.get(0));
 
-            taskList.add(testTaskB);
-            assertEquals(2, taskList.size());
-            assertEquals(testTaskA, taskList.get(0));
-            assertEquals(testTaskB, taskList.get(1));
+        taskList.add(testTaskB);
+        assertEquals(2, taskList.size());
+        assertEquals(testTaskA, taskList.get(0));
+        assertEquals(testTaskB, taskList.get(1));
 
-            taskList.add(testTaskC);
-            assertEquals(3, taskList.size());
-            assertEquals(testTaskA, taskList.get(0));
-            assertEquals(testTaskB, taskList.get(1));
-            assertEquals(testTaskC, taskList.get(2));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.add(testTaskC);
+        assertEquals(3, taskList.size());
+        assertEquals(testTaskA, taskList.get(0));
+        assertEquals(testTaskB, taskList.get(1));
+        assertEquals(testTaskC, taskList.get(2));
 
     }
 
@@ -77,12 +70,9 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskB);
         assertEquals(1, taskList.size());
 
-        try {
-            taskList.complete(0);
-            assertEquals(0, taskList.size());
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.complete(0);
+        assertEquals(0, taskList.size());
+
     }
 
     @Test
@@ -91,8 +81,8 @@ public class TaskListTest extends DateTest {
 
         try {
             taskList.complete(0);
-            fail("Expected Invalid Index Exception");
-        } catch (InvalidIndexException e) {
+            fail("Expected Index Out Of Bounds Exception");
+        } catch (IndexOutOfBoundsException e) {
             assertEquals(0, taskList.size());
         }
     }
@@ -103,14 +93,10 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskB);
         assertEquals(2, taskList.size());
 
-        try {
-            assertEquals(testTaskA, taskList.get(0));
-            taskList.complete(0);
-            assertEquals(1, taskList.size());
-            assertEquals(testTaskB, taskList.get(0));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        assertEquals(testTaskA, taskList.get(0));
+        taskList.complete(0);
+        assertEquals(1, taskList.size());
+        assertEquals(testTaskB, taskList.get(0));
 
     }
 
@@ -121,15 +107,12 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskC);
         assertEquals(3, taskList.size());
 
-        try {
-            assertEquals(testTaskA, taskList.get(0));
-            taskList.complete(0);
-            taskList.complete(1);
-            assertEquals(1, taskList.size());
-            assertEquals(testTaskB, taskList.get(0));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        assertEquals(testTaskA, taskList.get(0));
+        taskList.complete(0);
+        taskList.complete(1);
+        assertEquals(1, taskList.size());
+        assertEquals(testTaskB, taskList.get(0));
+
     }
 
     @Test
@@ -139,14 +122,10 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskC);
         assertEquals(3, taskList.size());
 
-        try {
-            taskList.complete(2);
-            taskList.complete(0);
-            taskList.complete(0);
-            assertEquals(0, taskList.size());
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.complete(2);
+        taskList.complete(0);
+        taskList.complete(0);
+        assertEquals(0, taskList.size());
 
     }
 
@@ -155,19 +134,15 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskC);
         assertEquals(1, taskList.size());
 
-        try {
-            taskList.complete(0);
-            assertEquals(0,taskList.size());
+        taskList.complete(0);
+        assertEquals(0,taskList.size());
 
-            taskList.add(testTaskB);
-            assertEquals(1, taskList.size());
-            assertEquals(testTaskB, taskList.get(0));
+        taskList.add(testTaskB);
+        assertEquals(1, taskList.size());
+        assertEquals(testTaskB, taskList.get(0));
 
-            taskList.complete(0);
-            assertEquals(0,taskList.size());
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.complete(0);
+        assertEquals(0,taskList.size());
 
     }
 
@@ -177,23 +152,19 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         assertEquals(2, taskList.size());
 
-        try {
-            taskList.complete(1);
-            assertEquals(1,taskList.size());
-            assertEquals(testTaskC, taskList.get(0));
+        taskList.complete(1);
+        assertEquals(1,taskList.size());
+        assertEquals(testTaskC, taskList.get(0));
 
-            taskList.add(testTaskB);
-            taskList.add(testTaskA);
-            assertEquals(3, taskList.size());
-            assertEquals(testTaskB, taskList.get(1));
+        taskList.add(testTaskB);
+        taskList.add(testTaskA);
+        assertEquals(3, taskList.size());
+        assertEquals(testTaskB, taskList.get(1));
 
-            taskList.complete(2);
-            taskList.complete(0);
-            assertEquals(1,taskList.size());
-            assertEquals(testTaskB, taskList.get(0));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.complete(2);
+        taskList.complete(0);
+        assertEquals(1,taskList.size());
+        assertEquals(testTaskB, taskList.get(0));
 
     }
 
@@ -209,16 +180,12 @@ public class TaskListTest extends DateTest {
     public void testSortOne() {
         taskList.add(testTaskA);
 
-        try {
-            assertEquals(1,taskList.size());
-            assertEquals(testTaskA,taskList.get(0));
+        assertEquals(1,taskList.size());
+        assertEquals(testTaskA,taskList.get(0));
 
-            taskList.sort();
-            assertEquals(1,taskList.size());
-            assertEquals(testTaskA,taskList.get(0));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.sort();
+        assertEquals(1,taskList.size());
+        assertEquals(testTaskA,taskList.get(0));
 
     }
 
@@ -229,19 +196,15 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskC);
         assertEquals(3,taskList.size());
 
-        try {
-            assertEquals(testTaskA,taskList.get(0));
-            assertEquals(testTaskB,taskList.get(1));
-            assertEquals(testTaskC,taskList.get(2));
+        assertEquals(testTaskA,taskList.get(0));
+        assertEquals(testTaskB,taskList.get(1));
+        assertEquals(testTaskC,taskList.get(2));
 
-            taskList.sort();
-            assertEquals(3,taskList.size());
-            assertEquals(testTaskA,taskList.get(0));
-            assertEquals(testTaskB,taskList.get(1));
-            assertEquals(testTaskC,taskList.get(2));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.sort();
+        assertEquals(3,taskList.size());
+        assertEquals(testTaskA,taskList.get(0));
+        assertEquals(testTaskB,taskList.get(1));
+        assertEquals(testTaskC,taskList.get(2));
 
     }
 
@@ -256,19 +219,15 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskC);
         assertEquals(3,taskList.size());
 
-        try {
-            assertEquals(testTaskA,taskList.get(0));
-            assertEquals(testTaskB,taskList.get(1));
-            assertEquals(testTaskC,taskList.get(2));
+        assertEquals(testTaskA,taskList.get(0));
+        assertEquals(testTaskB,taskList.get(1));
+        assertEquals(testTaskC,taskList.get(2));
 
-            taskList.sort();
-            assertEquals(3,taskList.size());
-            assertEquals(testTaskA,taskList.get(0));
-            assertEquals(testTaskC,taskList.get(1));
-            assertEquals(testTaskB,taskList.get(2));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.sort();
+        assertEquals(3,taskList.size());
+        assertEquals(testTaskA,taskList.get(0));
+        assertEquals(testTaskC,taskList.get(1));
+        assertEquals(testTaskB,taskList.get(2));
 
     }
 
@@ -285,19 +244,15 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskC);
         assertEquals(3,taskList.size());
 
-        try {
-            assertEquals(testTaskA,taskList.get(0));
-            assertEquals(testTaskB,taskList.get(1));
-            assertEquals(testTaskC,taskList.get(2));
+        assertEquals(testTaskA,taskList.get(0));
+        assertEquals(testTaskB,taskList.get(1));
+        assertEquals(testTaskC,taskList.get(2));
 
-            taskList.sort();
-            assertEquals(3,taskList.size());
-            assertEquals(testTaskB,taskList.get(0));
-            assertEquals(testTaskC,taskList.get(1));
-            assertEquals(testTaskA,taskList.get(2));
-        } catch (InvalidIndexException e) {
-            fail("Invalid Index Exception");
-        }
+        taskList.sort();
+        assertEquals(3,taskList.size());
+        assertEquals(testTaskB,taskList.get(0));
+        assertEquals(testTaskC,taskList.get(1));
+        assertEquals(testTaskA,taskList.get(2));
 
     }
 
@@ -308,7 +263,7 @@ public class TaskListTest extends DateTest {
         testTaskA.setDueDate(cal.getTime());
 
         taskList.add(testTaskA);
-        assertEquals(5,taskList.getMaxDaysUntilDue());
+        assertEquals(5,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
     @Test
@@ -321,7 +276,7 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         taskList.add(testTaskB);
         taskList.add(testTaskC);
-        assertEquals(7,taskList.getMaxDaysUntilDue());
+        assertEquals(7,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
     @Test
@@ -335,7 +290,7 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         taskList.add(testTaskB);
         taskList.add(testTaskC);
-        assertEquals(2,taskList.getMaxDaysUntilDue());
+        assertEquals(2,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
     @Test
@@ -351,7 +306,7 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         taskList.add(testTaskB);
         taskList.add(testTaskC);
-        assertEquals(0,taskList.getMaxDaysUntilDue());
+        assertEquals(0,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
     @Test
@@ -367,7 +322,7 @@ public class TaskListTest extends DateTest {
         taskList.add(testTaskA);
         taskList.add(testTaskB);
         taskList.add(testTaskC);
-        assertEquals(100,taskList.getMaxDaysUntilDue());
+        assertEquals(0,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
     @Test
@@ -424,14 +379,11 @@ public class TaskListTest extends DateTest {
         JSONArray jsonArray = taskList.serialize();
         assertEquals(1,jsonArray.length());
 
-        try {
-            Task newTask = new Task(jsonArray.getJSONObject(0));
-            assertEquals(testTaskA.getLabel(), newTask.getLabel());
-            assertEqualDate(testTaskA.getDueDate(), newTask.getDueDate());
-            // Expected Behaviour
-        } catch (InvalidJsonException e) {
-            fail("Invalid Json Exception");
-        }
+
+        Task newTask = new Task(jsonArray.getJSONObject(0));
+        assertEquals(testTaskA.getLabel(), newTask.getLabel());
+        assertEqualDate(testTaskA.getDueDate(), newTask.getDueDate());
+
     }
 
     @Test
@@ -442,20 +394,13 @@ public class TaskListTest extends DateTest {
         JSONArray jsonArray = taskList.serialize();
         assertEquals(3,jsonArray.length());
 
-        try {
-            Task newTaskA = new Task(jsonArray.getJSONObject(0));
-            Task newTaskB = new Task(jsonArray.getJSONObject(1));
-            Task newTaskC = new Task(jsonArray.getJSONObject(2));
-            assertEquals(testTaskA.getLabel(), newTaskA.getLabel());
-            assertEqualDate(testTaskA.getDueDate(), newTaskA.getDueDate());
-            assertEquals(testTaskB.getLabel(), newTaskB.getLabel());
-            assertEqualDate(testTaskB.getDueDate(), newTaskB.getDueDate());
-            assertEquals(testTaskC.getLabel(), newTaskC.getLabel());
-            assertEqualDate(testTaskC.getDueDate(), newTaskC.getDueDate());
-            // Expected Behaviour
-        } catch (InvalidJsonException e) {
-            fail("Invalid Json Exception");
-        }
+        Task newTaskA = new Task(jsonArray.getJSONObject(0));
+        Task newTaskB = new Task(jsonArray.getJSONObject(1));
+        Task newTaskC = new Task(jsonArray.getJSONObject(2));
+        assertEqualTask(testTaskA, newTaskA);
+        assertEqualTask(testTaskB, newTaskB);
+        assertEqualTask(testTaskC, newTaskC);
+
     }
 
 }

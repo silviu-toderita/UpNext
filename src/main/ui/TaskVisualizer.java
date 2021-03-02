@@ -1,6 +1,5 @@
 package ui;
 
-import exceptions.InvalidIndexException;
 import model.Task;
 import model.TaskList;
 
@@ -12,10 +11,11 @@ import static com.diogonunes.jcolor.Attribute.*;
 
 // Represents an object that generates the chronological task visualizer
 public class TaskVisualizer {
-    private static final int MAX_CHAR_WIDTH = 150;
+    private static final int MAX_CHAR_WIDTH = 200;
 
     private static final int DAYS_RED_THRESHOLD = 0;
     private static final int DAYS_YELLOW_THRESHOLD = 3;
+    private static final int DISTANT_THRESHOLD = 30;
 
     private static final String TASK_LIST_HEADER = "Here's what's on your plate: ";
     private static final String DONE_MESSAGE = "\uD83C\uDFDD You're all caught up, take a break! \uD83C\uDFDD"; //
@@ -54,15 +54,10 @@ public class TaskVisualizer {
         taskList.sort();
 
         int maxNameLength = taskList.getMaxLabelLength();
-        int maxDaysLeft = taskList.getMaxDaysUntilDue();
+        int maxDaysLeft = taskList.getMaxDaysUntilDue(DISTANT_THRESHOLD);
         String output = "";
         for (int i = 0; i < taskList.size(); i++) {
-            Task task = null;
-            try {
-                task = taskList.get(i);
-            } catch (InvalidIndexException e) {
-                e.printStackTrace();
-            }
+            Task task = taskList.get(i);
             output = output.concat("[");
             output = output.concat(String.valueOf(i + 1));
             output = output.concat("]");
@@ -101,25 +96,23 @@ public class TaskVisualizer {
             output = colorize(input,RED_TEXT());
         } else if (daysLeft <= DAYS_YELLOW_THRESHOLD) {
             output = colorize(input,YELLOW_TEXT());
-        } else {
+        } else if (daysLeft <= DISTANT_THRESHOLD) {
             output = colorize(input,GREEN_TEXT());
+        } else {
+            output = input;
         }
         return output;
     }
 
-    // EFFECT: Generate a chart that shows a chronological view of the time left until a task is due
+    // EFFECT: Generate a chart for each task that shows a chronological view of the time left until a task is due
     private String generateChart(int daysLeft, int maxDaysLeft, int length) {
-        if (daysLeft > 0 & daysLeft < 1825) {
+        if (daysLeft > 0 & daysLeft < DISTANT_THRESHOLD) {
             float percentOfMax = (float) daysLeft / maxDaysLeft;
-            float charsUntilDue = percentOfMax * length;
 
-            String output = "";
-            for (int i = 0; i < charsUntilDue; i++) {
-                output = output.concat("+");
-            }
+            String output = generateChartUpcomingTasks((percentOfMax * length) - 10);
             return output.concat(colorizeDeadline(">|=|", daysLeft));
-        } else if (daysLeft >= 1825) {
-            return "";
+        } else if (daysLeft >= DISTANT_THRESHOLD) {
+            return generateChartDistantTasks(length);
         } else if (daysLeft == 0) {
             return (colorizeDeadline("DUE TODAY:", 0));
         } else {
@@ -132,6 +125,25 @@ public class TaskVisualizer {
             }
             return (colorizeDeadline(output, -1));
         }
+    }
+
+    // EFFECT: Generate a chart for tasks in the next year
+    private String generateChartUpcomingTasks(float charsUntilDue) {
+        String output = "";
+        for (int i = 0; i < charsUntilDue; i++) {
+            output = output.concat("+");
+        }
+        return output;
+    }
+
+    // EFFECT: Generate a chart for tasks further away than the distant threshold
+    private String generateChartDistantTasks(int length) {
+        String output = "";
+        for (int i = 0; i < length; i++) {
+            output = output.concat(" ");
+        }
+        output = output.concat(" |=|");
+        return output;
     }
 
     // EFFECT: Return a string of hyphens with given length

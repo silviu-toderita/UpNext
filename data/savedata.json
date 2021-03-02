@@ -2,6 +2,24 @@
     {
         "month": 2,
         "year": 2021,
+        "label": "CPEN 311 reading",
+        "day": 1
+    },
+    {
+        "month": 2,
+        "year": 2021,
+        "label": "shenanigans",
+        "day": 2
+    },
+    {
+        "month": 2,
+        "year": 2021,
+        "label": "Co-Op Prep",
+        "day": 3
+    },
+    {
+        "month": 2,
+        "year": 2021,
         "label": "CPSC 210 project",
         "day": 7
     },
@@ -10,5 +28,11 @@
         "year": 2021,
         "label": "ENGL 301 Formal Report Introduction",
         "day": 9
+    },
+    {
+        "month": 3,
+        "year": 2021,
+        "label": "ansljfndsljgbds",
+        "day": 4
     }
 ]

@@ -1,9 +1,10 @@
 package persistence;
 
-import exceptions.InvalidJsonException;
+import exceptions.InvalidJsonFileException;
 import model.Task;
 import model.TaskList;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -38,31 +39,35 @@ public class ReaderWriter {
 
     // MODIFIES: this
     // EFFECTS: Read from the file path and return a list of tasks from the JSON in that file
-    //          If there is any error in reading from the file, throw IOException
-    public TaskList read() throws IOException, InvalidJsonException {
+    //          Throws IOException if there is any error in reading from the file
+    //          Throws InvalidJsonFileException if JSON file was invalid and deleted
+    public TaskList read() throws IOException, InvalidJsonFileException {
         StringBuilder rawData = new StringBuilder();
 
         try (Stream<String> stream = Files.lines(Paths.get(path), StandardCharsets.UTF_8)) {
             stream.forEach(s -> rawData.append(s));
         }
 
-        JSONArray jsonArray = new JSONArray(rawData.toString());
-        return parseTaskList(jsonArray);
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(rawData.toString());
+            return parseTaskList(jsonArray);
+        } catch (JSONException e) {
+            delete();
+            throw new InvalidJsonFileException();
+        }
+
     }
 
     // EFFECTS: Deletes the file at the path
     public void delete() {
         File file = new File(path);
-        try {
-            file.delete();
-        } catch (Exception e) {
-            return;
-        }
+        file.delete();
     }
 
     // EFFECTS: Return a list of tasks from the given JSON array
     //          Throws InvalidJsonException when there is invalid JSON data in the array
-    private TaskList parseTaskList(JSONArray jsonArray) throws InvalidJsonException {
+    private TaskList parseTaskList(JSONArray jsonArray) {
         TaskList taskList = new TaskList();
         for (Object each : jsonArray) {
             Task task = new Task((JSONObject)each);
