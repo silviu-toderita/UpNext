@@ -26,6 +26,7 @@ public class ReaderWriter {
         this.path = path;
     }
 
+    // CITATION: This code taken and modified from JsonSerializationDemo
     // MODIFIES: File at path
     // EFFECTS: Write the given TaskList to the file path.
     //          Throws FileNotFoundException if the file path is not valid
@@ -36,6 +37,7 @@ public class ReaderWriter {
         writer.close();
     }
 
+    // CITATION: This code taken and modified from JsonSerializationDemo
     // EFFECTS: Read from the file path and return a list of tasks from the JSON in that file
     //          Throws IOException if there is any error in reading from the file
     //          Throws InvalidJsonFileException if JSON file was invalid (file will be deleted before exception thrown)
