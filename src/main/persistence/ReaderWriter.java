@@ -65,6 +65,10 @@ public class ReaderWriter {
         file.delete();
     }
 
+    public String getPath() {
+        return path;
+    }
+
     // EFFECTS: Return a list of tasks from the given JSON array
     private TaskList parseTaskList(JSONArray jsonArray) {
         TaskList taskList = new TaskList();
