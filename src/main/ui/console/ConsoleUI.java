@@ -1,4 +1,4 @@
-package ui;
+package ui.console;
 
 import exceptions.*;
 import model.Task;

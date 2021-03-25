@@ -1,21 +1,74 @@
 [
     {
+        "month": 11,
+        "year": 1969,
+        "label": "My Saint's Day",
+        "day": 31
+    },
+    {
         "month": 2,
-        "year": 2021,
-        "label": "CPEN Reading",
+        "year": 2020,
+        "label": "test",
         "day": 8
     },
     {
         "month": 2,
         "year": 2021,
-        "label": "CPSC 210 Phase 3",
+        "label": "So is the 26th",
+        "day": 1
+    },
+    {
+        "month": 2,
+        "year": 2021,
+        "label": "Extra super long time fun lengthy broad task.",
+        "day": 6
+    },
+    {
+        "month": 2,
+        "year": 2021,
+        "label": "Old Task",
+        "day": 8
+    },
+    {
+        "month": 2,
+        "year": 2021,
+        "label": "24 years since coming to Canada",
+        "day": 16
+    },
+    {
+        "month": 2,
+        "year": 2021,
+        "label": "My Birthday",
         "day": 23
     },
-
     {
-      "month": 3,
-      "year": 2021,
-      "label": "Groceries",
-      "day": 4
+        "month": 2,
+        "year": 2021,
+        "label": "The day after my birthday",
+        "day": 24
+    },
+    {
+        "month": 2,
+        "year": 2031,
+        "label": "March 25th is a special day too",
+        "day": 25
+    },
+    {
+        "month": 8,
+        "year": 2021,
+        "label": "And the 27th",
+        "day": 6
+    },
+    {
+        "month": 2,
+        "year": 2031,
+        "label": "It's June!",
+        "day": 25
+    },
+    {
+        "month": 2,
+        "year": 2031,
+        "label": "It's 2030!",
+        "day": 25
     }
 ]

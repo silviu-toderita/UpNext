@@ -1,4 +1,4 @@
-package ui;
+package ui.console;
 
 import model.Task;
 import model.TaskList;
@@ -152,5 +152,7 @@ public class TaskVisualizer {
         }
         return output;
     }
+
+
 
 }

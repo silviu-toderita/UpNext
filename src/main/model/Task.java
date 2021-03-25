@@ -21,9 +21,7 @@ public class Task implements Comparable<Task> {
         }
 
         this.label = label;
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR,10);
-        this.dueDate = cal.getTime();
+        removeDueDate();
     }
 
     // EFFECTS: Creates a task with given label and due date
@@ -67,6 +65,12 @@ public class Task implements Comparable<Task> {
     // EFFECTS: Changes the due date of this task
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public void removeDueDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR,10);
+        this.dueDate = cal.getTime();
     }
 
     // EFFECTS: Returns this task's due date as a string. For example: "Thu 11 Feb 2021".
