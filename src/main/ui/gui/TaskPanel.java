@@ -1,14 +1,11 @@
 package ui.gui;
 
-import exceptions.LabelLengthException;
 import model.Task;
-import ui.TimeOut;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 // Represents a panel for one task
 public class TaskPanel extends JPanel {
@@ -16,17 +13,19 @@ public class TaskPanel extends JPanel {
 
     private static final int DIVIDER_LINE_WIDTH = 300;
     private static final int MAX_LABEL_LENGTH = 32;
-    private static final int CHAR_WIDTH = 8;
+    private static final int CHAR_WIDTH = 9;
 
-    private static final Font LABEL_FONT = new Font("Helvetica", Font.PLAIN, 16);
+    private static final Font LABEL_FONT = new Font("Helvetica", Font.BOLD, 16);
 
-    Task task;
+    private ContentEditor editor;
+    private Task task;
     private Color backgroundColor;
     private int height;
 
     // EFFECTS: Initializes a panel for a task
-    public TaskPanel(Task task, Color backgroundColor, int width, int height,
+    public TaskPanel(ContentEditor editor, Task task, Color backgroundColor, int width, int height,
                      int maxDaysUntilDue, int maxDaysThreshold, int maxLabelLength) {
+        this.editor = editor;
         this.task = task;
         this.backgroundColor = backgroundColor;
         this.height = height;
@@ -49,12 +48,14 @@ public class TaskPanel extends JPanel {
         }
 
         int chartWidth = width - maxLabelWidth;
-        JPanel chartPanel = new ChartPanel(chartWidth, height, task, backgroundColor,
+        JPanel chartPanel = new ChartPanel(editor, chartWidth, height, task, backgroundColor,
                 maxDaysUntilDue, maxDaysThreshold, LABEL_FONT);
-        chartPanel.setBounds(maxLabelWidth, 0, chartWidth, height);
+        chartPanel.setBounds(maxLabelWidth + 15, 0, chartWidth, height);
         add(chartPanel);
 
+        add(getDoneBox());
         add(getLabelField(task.getLabel(),maxLabelWidth));
+
     }
 
     // EFFECTS: Generates a field for the task label
@@ -72,13 +73,13 @@ public class TaskPanel extends JPanel {
         labelField.setBackground(backgroundColor);
         labelField.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 
-        labelField.setBounds(0,0,width,height);
+        labelField.setBounds(15,0,width,height);
         labelField.setFocusable(false);
 
         labelField.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                editLabel(labelField);
+                editor.editLabel(task, false);
             }
 
         });
@@ -86,23 +87,21 @@ public class TaskPanel extends JPanel {
         return labelField;
     }
 
-    private void editLabel(JTextField labelField) {
-        while (true) {
-            String label = JOptionPane.showInputDialog(this, "Enter Task Name:",task.getLabel());
-            try {
-                task.setLabel(label);
-                labelField.setText(label);
-                TimeOut.saveTasks();
-                break;
-            } catch (LabelLengthException e) {
-                JOptionPane.showMessageDialog(this, "Name cannot be empty!",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            } catch (NullPointerException e) {
-                break;
+    private JCheckBox getDoneBox() {
+        JCheckBox doneBox = new JCheckBox();
+        doneBox.setBounds(0,8,25,25);
+
+        doneBox.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                editor.removeTask(task);
             }
-        }
 
+        });
 
+        return doneBox;
     }
+
+
 
 }

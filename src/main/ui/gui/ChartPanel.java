@@ -1,15 +1,11 @@
 package ui.gui;
 
-import com.toedter.calendar.JDateChooser;
-import exceptions.LabelLengthException;
 import model.Task;
-import ui.TimeOut;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Date;
 
 // Represents a panel for a chart visually displaying time til due
 public class ChartPanel extends JPanel {
@@ -26,21 +22,31 @@ public class ChartPanel extends JPanel {
 
     private static final Font DAYS_LEFT_FONT = new Font("Helvetica", Font.PLAIN, 12);
 
+    private ContentEditor editor;
     private Task task;
+    private int width;
     private int height;
     private Color backgroundColor;
+    private int maxDaysUntilDue;
     private int maxDaysThreshold;
     private Font labelFont;
 
     // EFFECTS: Generates a panel for the bar chart
-    public ChartPanel(int width, int height, Task task, Color backgroundColor,
+    public ChartPanel(ContentEditor editor, int width, int height, Task task, Color backgroundColor,
                       int maxDaysUntilDue, int maxDaysThreshold, Font labelFont) {
+        this.editor = editor;
         this.task = task;
+        this.width = width;
         this.height = height;
         this.backgroundColor = backgroundColor;
+        this.maxDaysUntilDue = maxDaysUntilDue;
         this.maxDaysThreshold = maxDaysThreshold;
         this.labelFont = labelFont;
 
+        generateChartPanel();
+    }
+
+    private void generateChartPanel() {
         setLayout(null);
         setBackground(backgroundColor);
 
@@ -51,25 +57,45 @@ public class ChartPanel extends JPanel {
             widthPercent = 1;
         }
 
-        Color barColor = getBarColor(task.getDaysUntilDue());
-
-        add(getDaysLeftField(task.getDaysUntilDue(), barColor));
-
         int barWidth = Math.round(widthPercent * (width - MINIMUM_BAR_WIDTH - DUE_DATE_LABEL_WIDTH))
                 + MINIMUM_BAR_WIDTH;
         if (barWidth < MINIMUM_BAR_WIDTH) {
             barWidth = MINIMUM_BAR_WIDTH;
         }
-        Bar bar = new Bar(barColor, barWidth - 20, 15);
-        bar.setBounds(10, 15, barWidth - 20, 15);
-        add(bar);
 
-        add(getDueDateField(barWidth, task.getDueDateString()));
+        add(getBarPanel(barWidth));
+        add(getDueDateField(barWidth));
+    }
+
+    private JPanel getBarPanel(int width) {
+        JPanel barPanel = new JPanel();
+
+        barPanel.setLayout(null);
+        barPanel.setBackground(backgroundColor);
+        barPanel.setBounds(0,0,width,height);
+
+        Color barColor = getBarColor(task.getDaysUntilDue());
+
+        barPanel.add(getDaysLeftField(task.getDaysUntilDue(), barColor));
+
+        barPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                editDate();
+            }
+
+        });
+
+        Bar bar = new Bar(barColor, width - 20, 15);
+        bar.setBounds(10, 15, width - 20, 15);
+        barPanel.add(bar);
+
+        return barPanel;
     }
 
     // EFFECTS: Generates a text field for the due date
-    private JTextField getDueDateField(int positionX, String dueDate) {
-        String text = dueDate;
+    private JTextField getDueDateField(int positionX) {
+        String text = task.getDueDateString();
         if (task.getDaysUntilDue() >= DAYS_DISTANT_THRESHOLD) {
             text = NO_DUE_DATE_LABEL;
         }
@@ -80,16 +106,16 @@ public class ChartPanel extends JPanel {
         dueDateField.setBackground(backgroundColor);
         dueDateField.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 
-        dueDateField.setBounds(positionX,2,DUE_DATE_LABEL_WIDTH,height - 4);
-        dueDateField.setFocusable(false);
-
         dueDateField.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                editDate(dueDateField);
+                editDate();
             }
 
         });
+
+        dueDateField.setBounds(positionX,2,DUE_DATE_LABEL_WIDTH,height - 4);
+        dueDateField.setFocusable(false);
 
         return dueDateField;
     }
@@ -123,6 +149,14 @@ public class ChartPanel extends JPanel {
         daysLeftField.setBackground(backgroundColor);
         daysLeftField.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 
+        daysLeftField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                editDate();
+            }
+
+        });
+
         daysLeftField.setBounds(20, 16, 80, 14);
         daysLeftField.setFocusable(false);
 
@@ -146,22 +180,9 @@ public class ChartPanel extends JPanel {
         return "";
     }
 
-    private void editDate(JTextField dueDateField) {
-        JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setDate(task.getDueDate());
-
-        Object[] parameters = {"Enter Due Date or Press Cancel To Delete Due Date:", dateChooser};
-        int result = JOptionPane.showConfirmDialog(this, parameters, task.getDueDateString(),
-                JOptionPane.CANCEL_OPTION);
-
-        if (result == 2) {
-            task.removeDueDate();
-            dueDateField.setText(NO_DUE_DATE_LABEL);
-        } else {
-            task.setDueDate(dateChooser.getDate());
-            dueDateField.setText(task.getDueDateString());
-        }
-        TimeOut.saveTasks();
-        repaint();
+    private void editDate() {
+        editor.editDate(task, task.getDaysUntilDue() > DAYS_DISTANT_THRESHOLD);
     }
+
+
 }

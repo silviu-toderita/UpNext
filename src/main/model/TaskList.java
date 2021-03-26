@@ -28,6 +28,10 @@ public class TaskList {
         taskList.remove(index);
     }
 
+    public void complete(Task task) {
+        taskList.remove(task);
+    }
+
     // MODIFIES: this
     // EFFECT: Sorts the task list in order from smallest due date to largest due date
     public void sort() {

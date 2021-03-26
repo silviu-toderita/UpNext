@@ -10,23 +10,30 @@ import java.awt.*;
 public class TasksPane extends JScrollPane {
 
     private static final int TASK_HEIGHT = 45;
-
     private static final int DAYS_MAX_THRESHOLD = 60;
+    private static final Font allDoneFont = new Font("Helvetica", Font.ITALIC, 20);
 
+    private ContentEditor editor;
     private TaskList taskList;
     private int width;
     private int height;
     private Color backgroundColor;
 
     // EFFECTS: Initialize scrollable pane with no border
-    public TasksPane(TaskList taskList, int width, int height, Color backgroundColor) {
+    public TasksPane(ContentEditor editor, TaskList taskList, int width, int height, Color backgroundColor) {
         super(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        this.editor = editor;
         this.taskList = taskList;
         this.width = width;
         this.height = height;
         this.backgroundColor = backgroundColor;
 
-        setViewportView(getTasksPanel());
+        if (taskList.size() == 0) {
+            setViewportView(getAllDonePanel());
+        } else {
+            setViewportView(getTasksPanel());
+        }
+
         setBorder(javax.swing.BorderFactory.createEmptyBorder());
     }
 
@@ -44,7 +51,7 @@ public class TasksPane extends JScrollPane {
 
         for (int i = 0;i < numTasks;i++) {
             Task task = taskList.get(i);
-            JPanel taskPanel = new TaskPanel(task, backgroundColor, width, TASK_HEIGHT,
+            JPanel taskPanel = new TaskPanel(editor,task, backgroundColor, width, TASK_HEIGHT,
                     maxDaysUntilDue, DAYS_MAX_THRESHOLD, labelLength);
             taskPanel.setBounds(0, i * TASK_HEIGHT, width, TASK_HEIGHT);
             tasksPanel.add(taskPanel);
@@ -55,7 +62,20 @@ public class TasksPane extends JScrollPane {
         return tasksPanel;
     }
 
+    private JPanel getAllDonePanel() {
+        JPanel allDonePanel = new JPanel();
+        JLabel allDoneLabel = new JLabel("You're all done, relax and kick back!");
 
+        allDonePanel.setBackground(backgroundColor);
+
+        allDoneLabel.setForeground(Color.WHITE);
+        allDoneLabel.setFont(allDoneFont);
+        allDoneLabel.setBounds(0,0,300,25);
+
+        allDonePanel.add(allDoneLabel);
+
+        return allDonePanel;
+    }
 
 
 }
