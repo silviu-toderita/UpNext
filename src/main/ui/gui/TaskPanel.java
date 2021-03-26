@@ -43,9 +43,6 @@ public class TaskPanel extends JPanel {
         add(bar);
 
         int maxLabelWidth = maxLabelLength * CHAR_WIDTH;
-        if (maxLabelLength > MAX_LABEL_LENGTH) {
-            maxLabelWidth = MAX_LABEL_LENGTH * CHAR_WIDTH;
-        }
 
         int chartWidth = width - maxLabelWidth;
         JPanel chartPanel = new ChartPanel(editor, chartWidth, height, task, backgroundColor,
@@ -101,7 +98,5 @@ public class TaskPanel extends JPanel {
 
         return doneBox;
     }
-
-
 
 }

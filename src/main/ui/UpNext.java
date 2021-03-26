@@ -8,10 +8,10 @@ import ui.gui.TasksPane;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 // Represents the UI for UpNext
 public class UpNext extends JFrame {
@@ -23,14 +23,14 @@ public class UpNext extends JFrame {
     private static final int TASKS_PANEL_Y_POSITION = BORDER + 40;
     private static final int TASKS_PANEL_MAX_HEIGHT = 3000;
 
+    private static final Font titleFont = new Font("Helvetica", Font.BOLD, 20);
+    private static final Font buttonFont = new Font("Helvetica", Font.BOLD, 30);
+    private static final Font dateFont = new Font("Helvetica", Font.ITALIC, 16);
 
     private TaskList taskList;
     private ContentEditor editor;
     private int width;
     private int height;
-
-    Font titleFont = new Font("Helvetica", Font.BOLD, 20);
-    Font buttonFont = new Font("Helvetica", Font.BOLD, 30);
 
     // EFFECTS: Starts the app
     public static void main(String[] args) {
@@ -78,6 +78,14 @@ public class UpNext extends JFrame {
         tasksPane.setBounds(BORDER,TASKS_PANEL_Y_POSITION, tasksPanelWidth, tasksPanelHeight);
         add(tasksPane);
 
+        Calendar todayDate = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy");
+        JLabel todayDateLabel = new JLabel("Today: " + sdf.format(todayDate.getTime()));
+        todayDateLabel.setFont(dateFont);
+        todayDateLabel.setForeground(Color.WHITE);
+        todayDateLabel.setBounds(width - 200, TASKS_PANEL_Y_POSITION + tasksPanelHeight + 5,200,25);
+        add(todayDateLabel);
+
         setSize(width, height);
         setVisible(true);
     }
@@ -104,6 +112,8 @@ public class UpNext extends JFrame {
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBounds(0,0,200, 25);
         topPanel.add(titleLabel);
+
+
 
         JButton newButton = new JButton("+");
         newButton.setBackground(Color.GRAY);
