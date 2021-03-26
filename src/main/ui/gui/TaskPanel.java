@@ -10,20 +10,19 @@ import java.awt.event.MouseEvent;
 // Represents a panel for one task
 public class TaskPanel extends JPanel {
 
-
     private static final int DIVIDER_LINE_WIDTH = 300;
     private static final int MAX_LABEL_LENGTH = 32;
     private static final int CHAR_WIDTH = 9;
 
     private static final Font LABEL_FONT = new Font("Helvetica", Font.BOLD, 16);
 
-    private ContentEditor editor;
+    private TaskEditor editor;
     private Task task;
     private Color backgroundColor;
     private int height;
 
     // EFFECTS: Initializes a panel for a task
-    public TaskPanel(ContentEditor editor, Task task, Color backgroundColor, int width, int height,
+    public TaskPanel(TaskEditor editor, Task task, Color backgroundColor, int width, int height,
                      int maxDaysUntilDue, int maxDaysThreshold, int maxLabelLength) {
         this.editor = editor;
         this.task = task;
@@ -55,14 +54,15 @@ public class TaskPanel extends JPanel {
 
     }
 
-    // EFFECTS: Generates a field for the task label
-    private JTextField getLabelField(String label, int width) {
+    // MODIFIES: this
+    // EFFECTS: Generates a label for the task label
+    private JLabel getLabelField(String label, int width) {
         String text = label;
         if (label.length() > MAX_LABEL_LENGTH) {
             text = label.substring(0,MAX_LABEL_LENGTH - 3) + "...";
         }
 
-        JTextField labelField = new JTextField(text);
+        JLabel labelField = new JLabel(text);
 
         labelField.setFont(LABEL_FONT);
         labelField.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -84,10 +84,12 @@ public class TaskPanel extends JPanel {
         return labelField;
     }
 
+    // EFFECTS: Create a checkbox that the user can click to mark the task done and remove it from the list
     private JCheckBox getDoneBox() {
         JCheckBox doneBox = new JCheckBox();
         doneBox.setBounds(0,8,25,25);
 
+        // When clicked, remove the task
         doneBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {

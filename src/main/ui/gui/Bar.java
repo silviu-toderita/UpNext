@@ -9,7 +9,7 @@ public class Bar extends Component {
     private int width;
     private int height;
 
-    // EFFECTS: Sets initial parameters
+    // EFFECTS: Sets parameters of bar
     public Bar(Color color, int width, int height) {
         this.color = color;
         this.width = width;

@@ -13,7 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 
-public class ContentEditor {
+// Represents the editor for tasks in the task list
+public class TaskEditor {
 
     private static final String SAVE_DATA_PATH = "./data/savedata.json";
 
@@ -21,7 +22,8 @@ public class ContentEditor {
     private UpNext parent;
     private ReaderWriter readerWriter;
 
-    public ContentEditor(TaskList taskList, UpNext parent) {
+    // EFFECTS: Initialize the editor
+    public TaskEditor(TaskList taskList, UpNext parent) {
         this.taskList = taskList;
         this.parent = parent;
         readerWriter = new ReaderWriter(SAVE_DATA_PATH);
@@ -43,6 +45,9 @@ public class ContentEditor {
         return taskList;
     }
 
+    // MODIFIES: this
+    // EFFECTS: Saves tasks to memory, displays error dialog for any errors that occur. Triggers rendering of parent
+    //          JFrame again
     private void saveTasks() {
         try {
             readerWriter.write(taskList);
@@ -54,6 +59,9 @@ public class ContentEditor {
         parent.renderWindow();
     }
 
+    // MODIFIES: this
+    // EFFECTS: Launches dialog requesting a label for the task.
+    //          If this is a new task and cancel was pressed, throws NullPointerException to signal cancel creating task
     public void editLabel(Task task, Boolean newTask) throws NullPointerException {
         while (true) {
             String label = JOptionPane.showInputDialog(parent, "Enter Task Name:",task.getLabel());
@@ -74,6 +82,8 @@ public class ContentEditor {
 
     }
 
+    // MODIFIES: this
+    // EFFECTS: Launches dialog requesting a due date for the task. Defaults to today's date if task has no due date.
     public void editDate(Task task, boolean noDueDate) {
         JDateChooser dateChooser = new JDateChooser();
         if (noDueDate) {
@@ -100,6 +110,8 @@ public class ContentEditor {
         saveTasks();
     }
 
+    // MODIFIES: this
+    // EFFECTS: Removes the given task from the task list
     public void removeTask(Task task) {
         taskList.complete(task);
         saveTasks();

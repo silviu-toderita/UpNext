@@ -13,19 +13,17 @@ public class TasksPane extends JScrollPane {
     private static final int DAYS_MAX_THRESHOLD = 60;
     private static final Font allDoneFont = new Font("Helvetica", Font.ITALIC, 20);
 
-    private ContentEditor editor;
+    private TaskEditor editor;
     private TaskList taskList;
     private int width;
-    private int height;
     private Color backgroundColor;
 
-    // EFFECTS: Initialize scrollable pane with no border
-    public TasksPane(ContentEditor editor, TaskList taskList, int width, int height, Color backgroundColor) {
+    // EFFECTS: Initialize scrollable pane
+    public TasksPane(TaskEditor editor, TaskList taskList, int width, Color backgroundColor) {
         super(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.editor = editor;
         this.taskList = taskList;
         this.width = width;
-        this.height = height;
         this.backgroundColor = backgroundColor;
 
         if (taskList.size() == 0) {
@@ -62,6 +60,7 @@ public class TasksPane extends JScrollPane {
         return tasksPanel;
     }
 
+    // EFFECTS: Generate a panel with text telling the user they are done all their tasks
     private JPanel getAllDonePanel() {
         JPanel allDonePanel = new JPanel();
         JLabel allDoneLabel = new JLabel("You're all done, relax and kick back!");
