@@ -2,6 +2,7 @@ package model;
 
 
 import exceptions.LabelLengthException;
+import exceptions.NoDueDateException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ public class TaskTest extends EqualityTests {
     Task taskDueDate;
     Date testDateA;
     Date testDateB;
-    Date blankDate;
 
     @BeforeEach
     public void setUp() {
@@ -29,9 +29,6 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
         Calendar cal = Calendar.getInstance();
-
-        cal.add(Calendar.YEAR,10);
-        blankDate = cal.getTime();
         cal.set(2020,Calendar.MARCH,23);
         testDateA = cal.getTime();
         cal.set(2021,Calendar.APRIL,20);
@@ -41,7 +38,13 @@ public class TaskTest extends EqualityTests {
     @Test
     public void testMakeTaskNoDueDate() {
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
+        assertFalse(taskNoDueDate.getHasDueDate());
+        try {
+            taskNoDueDate.getDueDate();
+            fail("Expected NoDueDateException");
+        } catch (NoDueDateException e) {
+            // Pass
+        }
     }
 
     @Test
@@ -62,7 +65,14 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
         assertEquals("Groceries", taskDueDate.getLabel());
-        assertEqualDate(testDateA, taskDueDate.getDueDate());
+
+        try {
+            assertEqualDate(testDateA, taskDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+
+        assertTrue(taskDueDate.getHasDueDate());
     }
 
     @Test
@@ -82,13 +92,36 @@ public class TaskTest extends EqualityTests {
         jsonObject.put("year",2021);
         jsonObject.put("month",Calendar.APRIL);
         jsonObject.put("day",20);
+        jsonObject.put("hasDueDate", true);
 
         taskDueDate = new Task(jsonObject);
         assertEquals("test label",taskDueDate.getLabel());
 
         Calendar cal = Calendar.getInstance();
         cal.set(2021,Calendar.APRIL,20);
-        assertEqualDate(cal.getTime(), taskDueDate.getDueDate());
+        try {
+            assertEqualDate(cal.getTime(), taskDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+
+    }
+
+    @Test
+    public void testMakeTaskJSONNoDueDate() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("label","test label");
+        jsonObject.put("hasDueDate", false);
+
+        taskDueDate = new Task(jsonObject);
+        assertEquals("test label",taskDueDate.getLabel());
+        assertFalse(taskDueDate.getHasDueDate());
+        try {
+            taskDueDate.getDueDate();
+            fail("Expected NoDueDateException");
+        } catch (NoDueDateException e) {
+            // Pass
+        }
 
     }
 
@@ -103,20 +136,18 @@ public class TaskTest extends EqualityTests {
         }
 
         assertEquals("Volunteering", taskNoDueDate.getLabel());
-        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
+        assertFalse(taskNoDueDate.getHasDueDate());
     }
 
     @Test
     public void testChangeLabelEmptyLabel() {
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
 
         try {
             taskNoDueDate.setLabel("");
             fail("Expected Label Length Exception");
         } catch (LabelLengthException e) {
             assertEquals("Groceries", taskNoDueDate.getLabel());
-            assertEqualDate(blankDate,taskNoDueDate.getDueDate());
         }
 
     }
@@ -142,11 +173,17 @@ public class TaskTest extends EqualityTests {
     @Test
     public void testSetDueDate() {
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEqualDate(blankDate,taskNoDueDate.getDueDate());
+        assertFalse(taskNoDueDate.getHasDueDate());
 
         taskNoDueDate.setDueDate(testDateA);
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEqualDate(testDateA, taskNoDueDate.getDueDate());
+        try {
+            assertEqualDate(testDateA, taskNoDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+
+        assertTrue(taskNoDueDate.getHasDueDate());
     }
 
     @Test
@@ -157,22 +194,44 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
         assertEquals("Groceries", taskDueDate.getLabel());
-        assertEqualDate(testDateA, taskDueDate.getDueDate());
+
+        try {
+            assertEqualDate(testDateA, taskDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+        assertTrue(taskDueDate.getHasDueDate());
 
         taskDueDate.setDueDate(testDateB);
         assertEquals("Groceries", taskDueDate.getLabel());
-        assertEqualDate(testDateB, taskDueDate.getDueDate());
+        try {
+            assertEqualDate(testDateB, taskDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+        assertTrue(taskDueDate.getHasDueDate());
+
     }
 
     @Test
     public void testSetAndChangeDueDate() {
         taskNoDueDate.setDueDate(testDateB);
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEqualDate(testDateB, taskNoDueDate.getDueDate());
+        try {
+            assertEqualDate(testDateB, taskNoDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+        assertTrue(taskNoDueDate.getHasDueDate());
 
         taskNoDueDate.setDueDate(testDateA);
         assertEquals("Groceries", taskNoDueDate.getLabel());
-        assertEqualDate(testDateA, taskNoDueDate.getDueDate());
+        try {
+            assertEqualDate(testDateA, taskNoDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+        assertTrue(taskNoDueDate.getHasDueDate());
     }
 
     @Test
@@ -184,7 +243,12 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
         assertEquals("shenanigans", taskNoDueDate.getLabel());
-        assertEqualDate(testDateA, taskNoDueDate.getDueDate());
+        try {
+            assertEqualDate(testDateA, taskNoDueDate.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+        assertTrue(taskNoDueDate.getHasDueDate());
     }
 
     @Test
@@ -194,7 +258,21 @@ public class TaskTest extends EqualityTests {
         } catch (LabelLengthException e) {
             fail("Label Length Exception");
         }
-        assertEquals("Mon 23 Mar 2020",taskDueDate.getDueDateString());
+        try {
+            assertEquals("Mon 23 Mar 2020",taskDueDate.getDueDateString());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+    }
+
+    @Test
+    public void testGetDueDateStringNoDueDate() {
+        try {
+            taskNoDueDate.getDueDateString();
+            fail("Expected NoDueDateException");
+        } catch (NoDueDateException e) {
+            // Pass
+        }
     }
 
     @Test
@@ -202,7 +280,12 @@ public class TaskTest extends EqualityTests {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 100);
         taskNoDueDate.setDueDate(cal.getTime());
-        assertEquals(100, taskNoDueDate.getDaysUntilDue());
+        try {
+            assertEquals(100, taskNoDueDate.getDaysUntilDue());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+
     }
 
     @Test
@@ -215,7 +298,22 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
 
-        assertEquals(0,taskDueDate.getDaysUntilDue());
+        try {
+            assertEquals(0,taskDueDate.getDaysUntilDue());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+
+    }
+
+    @Test
+    public void testGetDaysUntilDueNoDueDate() {
+        try {
+            taskNoDueDate.getDaysUntilDue();
+            fail("Expected NoDueDateException");
+        } catch (NoDueDateException e) {
+            // Pass
+        }
     }
 
     @Test
@@ -230,7 +328,11 @@ public class TaskTest extends EqualityTests {
 
         Task newTask = new Task(jsonObject);
         assertEquals("Groceries", newTask.getLabel());
-        assertEqualDate(testDateA, newTask.getDueDate());
+        try {
+            assertEqualDate(testDateA, newTask.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
 
     }
 
@@ -240,7 +342,14 @@ public class TaskTest extends EqualityTests {
 
         Task newTask = new Task(jsonObject);
         assertEquals("Groceries", newTask.getLabel());
-        assertEqualDate(blankDate, newTask.getDueDate());
+
+        try {
+            newTask.getDueDate();
+            fail("Expected NoDueDateException");
+        } catch (NoDueDateException e){
+            assertFalse(newTask.getHasDueDate());
+        }
+
 
     }
 
@@ -254,7 +363,11 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
 
-        assertEquals(-5,taskDueDate.getDaysUntilDue());
+        try {
+            assertEquals(-5,taskDueDate.getDaysUntilDue());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
     }
 
     @Test
@@ -286,6 +399,18 @@ public class TaskTest extends EqualityTests {
             fail("Label Length Exception");
         }
         assertEquals(1,taskNoDueDate.compareTo(taskDueDate));
+    }
+
+    @Test
+    public void testRemoveDueDate() {
+        try {
+            taskDueDate = new Task("Shenanigans",testDateA);
+        } catch (LabelLengthException e) {
+            fail("Label Length Exception");
+        }
+
+        taskDueDate.removeDueDate();
+        assertFalse(taskDueDate.getHasDueDate());
     }
 
 }

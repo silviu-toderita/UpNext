@@ -1,5 +1,6 @@
 package ui.console;
 
+import exceptions.NoDueDateException;
 import model.Task;
 import model.TaskList;
 
@@ -79,7 +80,14 @@ public class TaskVisualizer {
         int chartLength = MAX_CHAR_WIDTH - maxNameLength - 27;
         String output = "";
 
-        int daysLeft = task.getDaysUntilDue();
+        int daysLeft;
+        String dueDateString = "";
+        try {
+            daysLeft = task.getDaysUntilDue();
+            dueDateString = task.getDueDateString();
+        } catch (NoDueDateException e) {
+            daysLeft = VERY_DISTANT_THRESHOLD;
+        }
 
         output = output.concat(colorizeDeadline(name,daysLeft));
         output = output.concat(generateLine(" ",spacesRequiredAfterName));
@@ -87,7 +95,7 @@ public class TaskVisualizer {
         output = output.concat(generateChart(daysLeft, maxDaysLeft, chartLength));
         output = output.concat("  ");
         if (daysLeft < VERY_DISTANT_THRESHOLD) {
-            output = output.concat(colorizeDeadline(task.getDueDateString(), daysLeft));
+            output = output.concat(colorizeDeadline(dueDateString, daysLeft));
         }
 
         return output;

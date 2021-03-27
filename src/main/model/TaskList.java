@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.DuplicateTaskException;
+import exceptions.NoDueDateException;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -17,7 +19,13 @@ public class TaskList {
 
     // MODIFIES: this
     // EFFECTS: Adds a task to the task list
-    public void add(Task task) {
+    //          If there is a task with the same name in the task list, throw DuplicateTask Exception
+    public void add(Task task) throws DuplicateTaskException {
+        for (Task each : taskList) {
+            if (each.getLabel().equals(task.getLabel())) {
+                throw new DuplicateTaskException();
+            }
+        }
         taskList.add(task);
     }
 
@@ -28,6 +36,8 @@ public class TaskList {
         taskList.remove(index);
     }
 
+    // MODIFIES: this
+    // EFFECTS: Removes given task from task list. If it's not in the list, do nothing.
     public void complete(Task task) {
         taskList.remove(task);
     }
@@ -43,8 +53,13 @@ public class TaskList {
     public int getMaxDaysUntilDue(int threshold) {
         int maxDaysLeft = 0;
         for (Task each: taskList) {
-            int daysLeft = each.getDaysUntilDue();
-            if (daysLeft > maxDaysLeft & daysLeft < threshold) {
+            int daysLeft;
+            try {
+                daysLeft = each.getDaysUntilDue();
+            } catch (NoDueDateException e) {
+                daysLeft = threshold + 1;
+            }
+            if (daysLeft > maxDaysLeft & daysLeft <= threshold) {
                 maxDaysLeft = daysLeft;
             }
         }

@@ -1,5 +1,6 @@
 package ui;
 
+import exceptions.DuplicateTaskException;
 import model.Task;
 import model.TaskList;
 import ui.gui.TaskEditor;
@@ -131,14 +132,19 @@ public class UpNext extends JFrame {
     // MODIFIES: this
     // EFFECTS: Run the prompts for user input and create new task
     private void addTask() {
-        try {
-            Task task = new Task("New Task");
-            editor.editLabel(task, true);
-            taskList.add(task);
-            editor.editDate(task,true);
-        } catch (Exception e) {
-            // NullPointerException means action was cancelled, do nothing
+        while (true) {
+            try {
+                Task task = new Task("New Task");
+                editor.editLabel(task, true);
+                taskList.add(task);
+                editor.editDate(task);
+                break;
+            } catch (DuplicateTaskException e) {
+                JOptionPane.showMessageDialog(null, "Task name already exists in list!",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                break;
+            }
         }
-
     }
 }

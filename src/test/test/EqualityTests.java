@@ -1,10 +1,12 @@
 package test;
 
+import exceptions.NoDueDateException;
 import model.Task;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Abstract class for comparing equality of classes for TimeOut application
@@ -28,7 +30,12 @@ public abstract class EqualityTests {
     // EFFECTS: Asserts equality of 2 tasks by their attributes
     protected void assertEqualTask(Task task0, Task task1) {
         assertEquals(task0.getLabel(), task1.getLabel());
-        assertEqualDate(task0.getDueDate(), task1.getDueDate());
+        try {
+            assertEqualDate(task0.getDueDate(), task1.getDueDate());
+        } catch (NoDueDateException e) {
+            assertFalse(task0.getHasDueDate());
+            assertFalse(task1.getHasDueDate());
+        }
     }
 
 }

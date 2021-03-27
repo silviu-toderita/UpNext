@@ -140,16 +140,18 @@ public class ConsoleUI {
 
             try {
                 task = new Task(input.nextLine());
+                taskList.add(task);
                 break;
             } catch (LabelLengthException e) {
                 System.out.println(colorize("The name of the task can't be blank!",RED_TEXT()));
+            } catch (DuplicateTaskException e) {
+                System.out.println(colorize("A task with this name already exists, choose another!",RED_TEXT()));
             }
 
         }
 
         addDate(task);
 
-        taskList.add(task);
         System.out.print(task.getLabel());
         System.out.println(colorize(" has been added to TimeOut, get to work!",GREEN_TEXT()));
     }
@@ -228,7 +230,12 @@ public class ConsoleUI {
     // EFFECTS: Captures user input to edit a due date for a task
     private void editDate(Task task) {
         System.out.print(colorize("The due date for the selected task is: ", MAGENTA_TEXT()));
-        System.out.println(task.getDueDateString());
+
+        try {
+            System.out.println(task.getDueDateString());
+        } catch (NoDueDateException e) {
+            System.out.println("NO DUE DATE");
+        }
         while (true) {
             System.out.println(colorize("Please enter a new due date or press enter to keep current date. "
                     + DATE_FORMAT_MESSAGE, MAGENTA_TEXT()));

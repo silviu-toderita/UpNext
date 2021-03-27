@@ -1,6 +1,8 @@
 package model;
 
+import exceptions.DuplicateTaskException;
 import exceptions.LabelLengthException;
+import exceptions.NoDueDateException;
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,11 @@ public class TaskListTest extends EqualityTests {
 
     @Test
     public void testAddTaskEmptyList() {
-        taskList.add(testTaskA);
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(1, taskList.size());
 
         assertEquals(testTaskA, taskList.get(0));
@@ -47,17 +53,29 @@ public class TaskListTest extends EqualityTests {
 
     @Test
     public void testAddMultipleTasks() {
-        taskList.add(testTaskA);
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(1, taskList.size());
 
         assertEquals(testTaskA, taskList.get(0));
 
-        taskList.add(testTaskB);
+        try {
+            taskList.add(testTaskB);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(2, taskList.size());
         assertEquals(testTaskA, taskList.get(0));
         assertEquals(testTaskB, taskList.get(1));
 
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(3, taskList.size());
         assertEquals(testTaskA, taskList.get(0));
         assertEquals(testTaskB, taskList.get(1));
@@ -66,8 +84,12 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testCompleteOnlyTask() {
-        taskList.add(testTaskB);
+    public void testCompleteByIndexOnlyTask() {
+        try {
+            taskList.add(testTaskB);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(1, taskList.size());
 
         taskList.complete(0);
@@ -76,7 +98,7 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testCompleteNoTasks() {
+    public void testCompleteByIndexNoTasks() {
         assertEquals(0, taskList.size());
 
         try {
@@ -88,9 +110,13 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testCompleteOneTaskOfMany() {
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
+    public void testCompleteByIndexOneTaskOfMany() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(2, taskList.size());
 
         assertEquals(testTaskA, taskList.get(0));
@@ -101,10 +127,14 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testCompleteTwoTasksOfMany() {
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+    public void testCompleteByIndexTwoTasksOfMany() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(3, taskList.size());
 
         assertEquals(testTaskA, taskList.get(0));
@@ -116,10 +146,14 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testCompleteManyTasks() {
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+    public void testCompleteByIndexManyTasks() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(3, taskList.size());
 
         taskList.complete(2);
@@ -130,14 +164,22 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testAddTaskAndCompleteTwice() {
-        taskList.add(testTaskC);
+    public void testAddTaskAndCompleteByIndexTwice() {
+        try {
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(1, taskList.size());
 
         taskList.complete(0);
         assertEquals(0,taskList.size());
 
-        taskList.add(testTaskB);
+        try {
+            taskList.add(testTaskB);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(1, taskList.size());
         assertEquals(testTaskB, taskList.get(0));
 
@@ -147,17 +189,25 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
-    public void testAddTasksAndCompleteTasksMultiple() {
-        taskList.add(testTaskC);
-        taskList.add(testTaskA);
+    public void testAddTasksAndCompleteByIndexTasksMultiple() {
+        try {
+            taskList.add(testTaskC);
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(2, taskList.size());
 
         taskList.complete(1);
         assertEquals(1,taskList.size());
         assertEquals(testTaskC, taskList.get(0));
 
-        taskList.add(testTaskB);
-        taskList.add(testTaskA);
+        try {
+            taskList.add(testTaskB);
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(3, taskList.size());
         assertEquals(testTaskB, taskList.get(1));
 
@@ -166,6 +216,59 @@ public class TaskListTest extends EqualityTests {
         assertEquals(1,taskList.size());
         assertEquals(testTaskB, taskList.get(0));
 
+    }
+
+    @Test
+    public void testCompleteByTaskOnlyTask() {
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
+        taskList.complete(testTaskA);
+        assertEquals(0, taskList.size());
+    }
+
+    @Test
+    public void testCompleteByTaskNotInList() {
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
+        taskList.complete(testTaskB);
+        assertEquals(1, taskList.size());
+        assertEqualTask(testTaskA, taskList.get(0));
+    }
+
+    @Test
+    public void testCompleteByTaskOneOfMany() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
+        taskList.complete(testTaskB);
+        assertEquals(2, taskList.size());
+        assertEqualTask(testTaskA, taskList.get(0));
+        assertEqualTask(testTaskC, taskList.get(1));
+    }
+
+    @Test
+    public void testCompleteByTaskMultiple() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
+        taskList.complete(testTaskA);
+        taskList.complete(testTaskB);
+        taskList.complete(testTaskC);
+        assertEquals(0, taskList.size());
     }
 
     @Test
@@ -178,7 +281,11 @@ public class TaskListTest extends EqualityTests {
 
     @Test
     public void testSortOne() {
-        taskList.add(testTaskA);
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
 
         assertEquals(1,taskList.size());
         assertEquals(testTaskA,taskList.get(0));
@@ -191,9 +298,13 @@ public class TaskListTest extends EqualityTests {
 
     @Test
     public void testSortThreeAllSame() {
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(3,taskList.size());
 
         assertEquals(testTaskA,taskList.get(0));
@@ -214,9 +325,13 @@ public class TaskListTest extends EqualityTests {
         cal.add(Calendar.DATE,5);
         testTaskB.setDueDate(cal.getTime());
 
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(3,taskList.size());
 
         assertEquals(testTaskA,taskList.get(0));
@@ -239,9 +354,14 @@ public class TaskListTest extends EqualityTests {
         cal.add(Calendar.DATE,-10);
         testTaskB.setDueDate(cal.getTime());
 
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
+
         assertEquals(3,taskList.size());
 
         assertEquals(testTaskA,taskList.get(0));
@@ -262,7 +382,11 @@ public class TaskListTest extends EqualityTests {
         cal.add(Calendar.DATE,5);
         testTaskA.setDueDate(cal.getTime());
 
-        taskList.add(testTaskA);
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(5,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
@@ -273,9 +397,13 @@ public class TaskListTest extends EqualityTests {
         testTaskA.setDueDate(cal.getTime());
         testTaskC.setDueDate(cal.getTime());
 
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(7,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
@@ -287,9 +415,13 @@ public class TaskListTest extends EqualityTests {
         cal.add(Calendar.DATE,-15);
         testTaskB.setDueDate(cal.getTime());
 
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(2,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
@@ -303,9 +435,13 @@ public class TaskListTest extends EqualityTests {
         cal.add(Calendar.DATE,-100);
         testTaskC.setDueDate(cal.getTime());
 
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(0,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
@@ -319,9 +455,13 @@ public class TaskListTest extends EqualityTests {
         testTaskC.setDueDate(cal.getTime());
         testTaskA = new Task("Groceries");
 
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(0,taskList.getMaxDaysUntilDue(THRESHOLD_DAYS));
     }
 
@@ -332,36 +472,51 @@ public class TaskListTest extends EqualityTests {
 
     @Test
     public void testGetMaxLabelLengthOneTask() {
-        taskList.add(testTaskB);
+        try {
+            taskList.add(testTaskB);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
 
         assertEquals(12,taskList.getMaxLabelLength());
     }
 
     @Test
     public void testGetMaxLabelLengthThreeTasksAllDifferent() {
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
 
         assertEquals(16,taskList.getMaxLabelLength());
     }
 
     @Test
     public void testGetMaxLabelLengthThreeTasksTwoSameMax() throws LabelLengthException {
-        taskList.add(testTaskA);
-        testTaskB.setLabel("CPEN 311 Project");
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
-
+        try {
+            taskList.add(testTaskA);
+            testTaskB.setLabel("CPEN 311 Project");
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         assertEquals(16,taskList.getMaxLabelLength());
     }
 
     @Test
     public void testGetMaxLabelLengthThreeTasksTwoSameNotMax() throws LabelLengthException {
-        taskList.add(testTaskA);
-        testTaskB.setLabel("Gardening");
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            testTaskB.setLabel("Gardening");
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
 
         assertEquals(16,taskList.getMaxLabelLength());
     }
@@ -375,22 +530,35 @@ public class TaskListTest extends EqualityTests {
 
     @Test
     public void testSerializeSingleTask() {
-        taskList.add(testTaskA);
+        try {
+            taskList.add(testTaskA);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         JSONArray jsonArray = taskList.serialize();
         assertEquals(1,jsonArray.length());
 
 
         Task newTask = new Task(jsonArray.getJSONObject(0));
         assertEquals(testTaskA.getLabel(), newTask.getLabel());
-        assertEqualDate(testTaskA.getDueDate(), newTask.getDueDate());
+        try {
+            assertEqualDate(testTaskA.getDueDate(), newTask.getDueDate());
+        } catch (NoDueDateException e) {
+            fail("Unexpected NoDueDateException");
+        }
+
 
     }
 
     @Test
     public void testSerializeMultipleTasks() {
-        taskList.add(testTaskA);
-        taskList.add(testTaskB);
-        taskList.add(testTaskC);
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
         JSONArray jsonArray = taskList.serialize();
         assertEquals(3,jsonArray.length());
 
@@ -401,6 +569,18 @@ public class TaskListTest extends EqualityTests {
         assertEqualTask(testTaskB, newTaskB);
         assertEqualTask(testTaskC, newTaskC);
 
+    }
+
+    @Test
+    public void testAddTaskDuplicate() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskB);
+            fail("Expected DuplicateTaskException");
+        } catch (DuplicateTaskException e) {
+            assertEquals(2, taskList.size());
+        }
     }
 
 }

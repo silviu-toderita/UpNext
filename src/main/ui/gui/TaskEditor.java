@@ -3,6 +3,7 @@ package ui.gui;
 import com.toedter.calendar.JDateChooser;
 import exceptions.InvalidJsonFileException;
 import exceptions.LabelLengthException;
+import exceptions.NoDueDateException;
 import model.Task;
 import model.TaskList;
 import persistence.ReaderWriter;
@@ -84,23 +85,20 @@ public class TaskEditor {
 
     // MODIFIES: this
     // EFFECTS: Launches dialog requesting a due date for the task. Defaults to today's date if task has no due date.
-    public void editDate(Task task, boolean noDueDate) {
+    public void editDate(Task task) {
         JDateChooser dateChooser = new JDateChooser();
-        if (noDueDate) {
-            dateChooser.setDate(Calendar.getInstance().getTime());
-        } else {
-            dateChooser.setDate(task.getDueDate());
-        }
-
         String message;
-        if (noDueDate) {
-            message = "Enter Due Date or Press Cancel for None";
-        } else {
+
+        try {
+            dateChooser.setDate(task.getDueDate());
             message = "Enter Due Date or Press Cancel to Delete Date";
+        } catch (NoDueDateException e) {
+            dateChooser.setDate(Calendar.getInstance().getTime());
+            message = "Enter Due Date or Press Cancel for None";
         }
 
-        int result = JOptionPane.showConfirmDialog(parent, new Object[] {message, dateChooser}, task.getDueDateString(),
-                JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(parent, new Object[] {message, dateChooser},
+                dateChooser.getDateFormatString(), JOptionPane.OK_CANCEL_OPTION);
 
         if (result == 2) {
             task.removeDueDate();

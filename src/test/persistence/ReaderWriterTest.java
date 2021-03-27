@@ -1,5 +1,6 @@
 package persistence;
 
+import exceptions.DuplicateTaskException;
 import exceptions.InvalidJsonFileException;
 import exceptions.LabelLengthException;
 import test.EqualityTests;
@@ -40,10 +41,15 @@ public class ReaderWriterTest extends EqualityTests {
         testTaskB = new Task("Volunteering", testDate);
         testTaskC = new Task("CPSC 210 Project", testDate);
 
-        taskListOneTask.add(testTaskA);
-        taskListThreeTasks.add(testTaskA);
-        taskListThreeTasks.add(testTaskB);
-        taskListThreeTasks.add(testTaskC);
+        try {
+            taskListOneTask.add(testTaskA);
+            taskListThreeTasks.add(testTaskA);
+            taskListThreeTasks.add(testTaskB);
+            taskListThreeTasks.add(testTaskC);
+        } catch (DuplicateTaskException e) {
+            fail("Unexpected DuplicateTaskException");
+        }
+
     }
 
     @Test

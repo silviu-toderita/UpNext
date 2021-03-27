@@ -1,5 +1,6 @@
 package ui.gui;
 
+import exceptions.NoDueDateException;
 import model.Task;
 
 import javax.swing.*;
@@ -56,12 +57,16 @@ public class ChartPanel extends JPanel {
         setBackground(backgroundColor);
 
         // Calculate the size of this bar in the chart compared to other tasks
-        float widthPercent = (float) (task.getDaysUntilDue() + 1) / (maxDaysUntilDue + 2);
-        if (widthPercent < 0) {
-            widthPercent = 0;
-        } else if (widthPercent > 1) {
+        float widthPercent;
+        try {
+            widthPercent = (float) (task.getDaysUntilDue() + 1) / (maxDaysUntilDue + 2);
+            if (widthPercent < 0) {
+                widthPercent = 0;
+            }
+        } catch (NoDueDateException e) {
             widthPercent = 1;
         }
+
         int barWidth = Math.round(widthPercent * (width - MINIMUM_BAR_WIDTH - DUE_DATE_LABEL_WIDTH))
                 + MINIMUM_BAR_WIDTH;
         if (barWidth < MINIMUM_BAR_WIDTH) {
@@ -80,9 +85,9 @@ public class ChartPanel extends JPanel {
         barPanel.setBackground(backgroundColor);
         barPanel.setBounds(0,0,width,height);
 
-        Color barColor = getBarColor(task.getDaysUntilDue());
+        Color barColor = getBarColor(task);
 
-        barPanel.add(getDaysLeftLabel(task.getDaysUntilDue(), barColor));
+        barPanel.add(getDaysLeftLabel(task, barColor));
 
         barPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -100,8 +105,15 @@ public class ChartPanel extends JPanel {
     }
 
     // EFFECTS: Generates a text label to superimpose on the bar showing the number of days left until due
-    private JLabel getDaysLeftLabel(int daysLeft, Color backgroundColor) {
-        JLabel daysLeftLabel = new JLabel(getDaysLeftText(daysLeft));
+    private JLabel getDaysLeftLabel(Task task, Color backgroundColor) {
+        JLabel daysLeftLabel;
+
+        try {
+            daysLeftLabel = new JLabel(getDaysLeftText(task.getDaysUntilDue()));
+        } catch (NoDueDateException e) {
+            daysLeftLabel = new JLabel("");
+        }
+
 
         Color textColor = Color.WHITE;
         if (backgroundColor == Color.YELLOW) {
@@ -129,7 +141,7 @@ public class ChartPanel extends JPanel {
 
     // EFFECTS: Returns a formatted string with the number of days left
     private String getDaysLeftText(int daysLeft) {
-        if (daysLeft > 1 && daysLeft < DAYS_DISTANT_THRESHOLD) {
+        if (daysLeft > 1) {
             return daysLeft + " Days Left";
         } else if (daysLeft == 1) {
             return "1 Day Left";
@@ -137,19 +149,22 @@ public class ChartPanel extends JPanel {
             return "Today";
         } else if (daysLeft == -1) {
             return "Yesterday";
-        } else if (daysLeft < -1) {
-            return Math.abs(daysLeft) + " Days Ago";
         }
 
-        return "";
+        return Math.abs(daysLeft) + " Days Ago";
+
     }
 
     // EFFECTS: Generates a label for the due date
     private JLabel getDueDateLabel(int positionX) {
-        String text = task.getDueDateString();
-        if (task.getDaysUntilDue() >= DAYS_DISTANT_THRESHOLD) {
+        String text;
+
+        try {
+            text = task.getDueDateString();
+        } catch (NoDueDateException e) {
             text = NO_DUE_DATE_LABEL;
         }
+
         JLabel getDueDateLabel = new JLabel(text);
 
         getDueDateLabel.setFont(labelFont);
@@ -172,7 +187,15 @@ public class ChartPanel extends JPanel {
     }
 
     // EFFECTS: Returns the appropriate colour for the bar based on the number of days left
-    private Color getBarColor(int days) {
+    private Color getBarColor(Task task) {
+        int days;
+
+        try {
+            days = task.getDaysUntilDue();
+        } catch (NoDueDateException e) {
+            return BAR_COLOR_GRAY;
+        }
+
         if (days >= maxDaysThreshold) {
             return BAR_COLOR_GRAY;
         } else if (days >= DAYS_YELLOW_THRESHOLD) {
@@ -187,9 +210,9 @@ public class ChartPanel extends JPanel {
     }
 
     // MODIFIES: this
-    // EFFECTS: Launch the edit date dialogue
+    // EFFECTS: Launch the edit date dialog
     private void editDate() {
-        editor.editDate(task, task.getDaysUntilDue() > DAYS_DISTANT_THRESHOLD);
+        editor.editDate(task);
     }
 
 

@@ -1,5 +1,6 @@
 package persistence;
 
+import exceptions.DuplicateTaskException;
 import exceptions.InvalidJsonFileException;
 import model.Task;
 import model.TaskList;
@@ -74,7 +75,11 @@ public class ReaderWriter {
         TaskList taskList = new TaskList();
         for (Object each : jsonArray) {
             Task task = new Task((JSONObject)each);
-            taskList.add(task);
+            try {
+                taskList.add(task);
+            } catch (DuplicateTaskException e) {
+                // Do Nothing
+            }
         }
         return taskList;
     }
