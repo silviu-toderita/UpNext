@@ -6,8 +6,8 @@ import model.Task;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 // Abstract class for comparing equality of classes for TimeOut application
 public abstract class EqualityTests {
