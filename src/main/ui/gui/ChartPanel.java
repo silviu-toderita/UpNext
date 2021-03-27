@@ -12,9 +12,8 @@ import java.awt.event.MouseEvent;
 public class ChartPanel extends JPanel {
 
     private static final String NO_DUE_DATE_LABEL = "-----";
-    private static final int DUE_DATE_LABEL_WIDTH = 140;
+    private static final int DUE_DATE_LABEL_WIDTH = 150;
     private static final int MINIMUM_BAR_WIDTH = 120;
-    private static final int DAYS_DISTANT_THRESHOLD = 1826;
     private static final int DAYS_YELLOW_THRESHOLD = 3;
     private static final int DAYS_ORANGE_THRESHOLD = 1;
     private static final int DAYS_RED_THRESHOLD = 0;
@@ -60,10 +59,13 @@ public class ChartPanel extends JPanel {
         float widthPercent;
         try {
             widthPercent = (float) (task.getDaysUntilDue() + 1) / (maxDaysUntilDue + 2);
-            if (widthPercent < 0) {
-                widthPercent = 0;
-            }
         } catch (NoDueDateException e) {
+            widthPercent = 1;
+        }
+
+        if (widthPercent < 0) {
+            widthPercent = 0;
+        } else if (widthPercent > 1) {
             widthPercent = 1;
         }
 

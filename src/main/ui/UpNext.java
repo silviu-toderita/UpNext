@@ -12,21 +12,33 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 // Represents the GUI for the UpNext App
 public class UpNext extends JFrame {
 
-    private static final Color backgroundColor = Color.DARK_GRAY;
+    private static final Color BACKGROUND_COLOR = Color.DARK_GRAY;
     private static final int BORDER = 20;
     private static final int TASKS_PANEL_Y_POSITION = BORDER + 40;
-    private static final Font titleFont = new Font("Helvetica", Font.BOLD, 20);
-    private static final Font buttonFont = new Font("Helvetica", Font.BOLD, 30);
-    private static final Font dateFont = new Font("Helvetica", Font.ITALIC, 16);
+    private static final Font TITLE_FONT = new Font("Helvetica", Font.BOLD, 20);
+    private static final Font BUTTON_FONT = new Font("Helvetica", Font.BOLD, 30);
+    private static final Font DATE_FONT = new Font("Helvetica", Font.PLAIN, 16);
+    private static final Font SAVE_STATUS_FONT = new Font("Helvetica", Font.ITALIC, 16);
+    private static final Color DATE_COLOR = new Color(127,200,255);
+    private static final Color SAVE_STATUS_GREEN = new Color(127,200,127);
+    private static final Color SAVE_STATUS_YELLOW = new Color(200,200,0);
+    private static final Color SAVE_STATUS_RED = new Color(255,127,127);
+    private static final int SAVE_STATUS_DISPLAY_SECONDS = 5;
 
+    Timer timer;
     private TaskList taskList;
     private TaskEditor editor;
     private int width;
     private int height;
+
+    private String saveStatus;
+    private Color saveStatusColor;
 
     // EFFECTS: Starts the app GUI
     public static void main(String[] args) {
@@ -36,10 +48,12 @@ public class UpNext extends JFrame {
     // EFFECTS: Initializes the GUI
     public UpNext() {
         super("UpNext");
+        timer = new Timer();
         width = 1100;
         height = 700;
         setMinimumSize(new Dimension(600,400));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSaveStatus("Starting Application...", Color.YELLOW);
 
         editor = new TaskEditor(taskList, this);
         taskList = editor.loadTasks();
@@ -54,14 +68,13 @@ public class UpNext extends JFrame {
         });
 
         renderWindow();
-
     }
 
     // MODIFIES: this
     // EFFECTS: Renders the window by removing all elements and redrawing them
     public void renderWindow() {
         getContentPane().removeAll();
-        getContentPane().setBackground(backgroundColor);
+        getContentPane().setBackground(BACKGROUND_COLOR);
         setLayout(null);
 
         // Top Panel with title and "new task" Button
@@ -72,19 +85,21 @@ public class UpNext extends JFrame {
         // Tasks Panel
         int tasksPanelWidth = width - (BORDER * 2);
         int tasksPanelHeight = height - (TASKS_PANEL_Y_POSITION * 2);
-        JScrollPane tasksPane = new TasksPane(editor, taskList, tasksPanelWidth, backgroundColor);
+        JScrollPane tasksPane = new TasksPane(editor, taskList, tasksPanelWidth, BACKGROUND_COLOR);
         tasksPane.setBounds(BORDER,TASKS_PANEL_Y_POSITION, tasksPanelWidth, tasksPanelHeight);
         add(tasksPane);
 
         // Today's Date
-        Calendar todayDate = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy");
-        JLabel todayDateLabel = new JLabel("Today: " + sdf.format(todayDate.getTime()));
-        todayDateLabel.setFont(dateFont);
-        todayDateLabel.setForeground(Color.WHITE);
+        JLabel todayDateLabel = getTodayDateLabel();
         todayDateLabel.setBounds(width - 200, TASKS_PANEL_Y_POSITION + tasksPanelHeight + 5,200,25);
         add(todayDateLabel);
 
+        // Save status
+        JLabel saveStatusLabel = getSaveStatusLabel();
+        saveStatusLabel.setBounds(40, TASKS_PANEL_Y_POSITION + tasksPanelHeight + 5,300,25);
+        add(saveStatusLabel);
+
+        update(getGraphics());
         setSize(width, height);
         setVisible(true);
     }
@@ -104,29 +119,40 @@ public class UpNext extends JFrame {
     private JPanel getTopPanel() {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(null);
-        topPanel.setBackground(backgroundColor);
+        topPanel.setBackground(BACKGROUND_COLOR);
 
-        JLabel titleLabel = new JLabel("Up Next:");
-        titleLabel.setFont(titleFont);
+        JLabel titleLabel = new JLabel("UpNext");
+        titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBounds(0,0,200, 25);
         topPanel.add(titleLabel);
 
+        JPanel titleUnderline = new JPanel();
+        titleUnderline.setBackground(Color.WHITE);
+        titleUnderline.setBounds(1,19, 69, 2); //nice
+        topPanel.add(titleUnderline);
+
+        topPanel.add(getNewButton());
+
+        return topPanel;
+    }
+
+    // EFFECTS: Generates the "new task" button
+    private JButton getNewButton() {
         JButton newButton = new JButton("+");
         newButton.setBackground(Color.GRAY);
-        newButton.setFont(buttonFont);
+        newButton.setFont(BUTTON_FONT);
         newButton.setForeground(Color.WHITE);
         newButton.setBorder(null);
         newButton.setOpaque(false);
         newButton.setContentAreaFilled(false);
         newButton.setBorderPainted(false);
         newButton.setBounds(width - BORDER - 60, 0, 30, 30);
-        topPanel.add(newButton);
 
         // When the "new task" button is pressed, add a task
         newButton.addActionListener(e -> addTask());
 
-        return topPanel;
+        return newButton;
     }
 
     // MODIFIES: this
@@ -146,5 +172,60 @@ public class UpNext extends JFrame {
                 break;
             }
         }
+    }
+
+    // EFFECTS: Generate a label with the current save status
+    private JLabel getSaveStatusLabel() {
+        JLabel saveStatusLabel = new JLabel(saveStatus);
+
+        saveStatusLabel.setFont(SAVE_STATUS_FONT);
+        saveStatusLabel.setForeground(saveStatusColor);
+
+
+        return saveStatusLabel;
+    }
+
+    // EFFECT: Generate a label with today's date
+    private JLabel getTodayDateLabel() {
+        Calendar todayDate = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy");
+
+        JLabel todayDateLabel = new JLabel("Today: " + sdf.format(todayDate.getTime()));
+
+        todayDateLabel.setFont(DATE_FONT);
+        todayDateLabel.setForeground(DATE_COLOR);
+
+
+        return todayDateLabel;
+    }
+
+    // MODIFIES: this
+    // EFFECT: Set the save status string and text color, and set a timer for 5 seconds to remove the string
+    public void setSaveStatus(String saveStatus, Color color) {
+        if (color == Color.YELLOW) {
+            saveStatusColor = SAVE_STATUS_YELLOW;
+        } else if (color == Color.RED) {
+            saveStatusColor = SAVE_STATUS_RED;
+        } else if (color == Color.GREEN) {
+            saveStatusColor = SAVE_STATUS_GREEN;
+        } else {
+            saveStatusColor = color;
+        }
+
+        this.saveStatus = saveStatus;
+
+        // Set a timer for a few seconds to remove the string, as this status is meant to display only momentarily
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                removeSaveStatus();
+            }
+        },SAVE_STATUS_DISPLAY_SECONDS * 1000);
+    }
+
+    // When timer reaches the end, remove the save status and re-render the window
+    private void removeSaveStatus() {
+        saveStatus = "";
+        renderWindow();
     }
 }

@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 // Represents a panel for one task
 public class TaskPanel extends JPanel {
@@ -16,6 +18,7 @@ public class TaskPanel extends JPanel {
 
     private static final Font LABEL_FONT = new Font("Helvetica", Font.BOLD, 16);
 
+    Timer timer;
     private TaskEditor editor;
     private Task task;
     private Color backgroundColor;
@@ -24,6 +27,7 @@ public class TaskPanel extends JPanel {
     // EFFECTS: Initializes a panel for a task
     public TaskPanel(TaskEditor editor, Task task, Color backgroundColor, int width, int height,
                      int maxDaysUntilDue, int maxDaysThreshold, int maxLabelLength) {
+        timer = new Timer();
         this.editor = editor;
         this.task = task;
         this.backgroundColor = backgroundColor;
@@ -93,7 +97,13 @@ public class TaskPanel extends JPanel {
         doneBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                editor.removeTask(task);
+                // Set a timer for 1/2 second to remove the task, so there is some time to see the box getting checked
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        editor.removeTask(task);
+                    }
+                },500);
             }
 
         });

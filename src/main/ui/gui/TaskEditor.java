@@ -10,6 +10,7 @@ import persistence.ReaderWriter;
 import ui.UpNext;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
@@ -33,16 +34,15 @@ public class TaskEditor {
     // MODIFIES: this
     // EFFECTS: Loads tasks from memory, displays error dialog for any errors that occur
     public TaskList loadTasks() {
+        parent.setSaveStatus("Loading Tasks...", Color.YELLOW);
         try {
             taskList = readerWriter.read();
+            parent.setSaveStatus("Tasks Loaded!", Color.GREEN);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Unable to read from file: " + SAVE_DATA_PATH,
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            parent.setSaveStatus("Unable to read from file: " + SAVE_DATA_PATH, Color.RED);
         } catch (InvalidJsonFileException e) {
-            JOptionPane.showMessageDialog(null, "Invalid File: " + SAVE_DATA_PATH
-                    + ", Deleting...","Error", JOptionPane.ERROR_MESSAGE);
+            parent.setSaveStatus("Invalid file: " + SAVE_DATA_PATH + ", Deleting...", Color.RED);
         }
-
         return taskList;
     }
 
@@ -50,12 +50,13 @@ public class TaskEditor {
     // EFFECTS: Saves tasks to memory, displays error dialog for any errors that occur. Triggers rendering of parent
     //          JFrame again
     private void saveTasks() {
+        parent.setSaveStatus("Saving Tasks...", Color.YELLOW);
+        parent.renderWindow();
         try {
             readerWriter.write(taskList);
+            parent.setSaveStatus("Tasks Saved!", Color.GREEN);
         } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(null,
-                    "Unable to write to file: " + readerWriter.getPath(),"Error",
-                    JOptionPane.ERROR_MESSAGE);
+            parent.setSaveStatus("Unable to write to file: " + SAVE_DATA_PATH, Color.RED);
         }
         parent.renderWindow();
     }
