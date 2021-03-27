@@ -53,7 +53,7 @@ public class ReaderWriter {
         try {
             jsonArray = new JSONArray(rawData.toString());
             return parseTaskList(jsonArray);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             delete();
             throw new InvalidJsonFileException();
         }
@@ -71,15 +71,11 @@ public class ReaderWriter {
     }
 
     // EFFECTS: Return a list of tasks from the given JSON array
-    private TaskList parseTaskList(JSONArray jsonArray) {
+    private TaskList parseTaskList(JSONArray jsonArray) throws DuplicateTaskException {
         TaskList taskList = new TaskList();
         for (Object each : jsonArray) {
             Task task = new Task((JSONObject)each);
-            try {
-                taskList.add(task);
-            } catch (DuplicateTaskException e) {
-                // Do Nothing
-            }
+            taskList.add(task);
         }
         return taskList;
     }

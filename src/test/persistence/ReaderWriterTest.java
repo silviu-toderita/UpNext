@@ -61,6 +61,7 @@ public class ReaderWriterTest extends EqualityTests {
         } catch (FileNotFoundException e) {
             // pass
         }
+
     }
 
     @Test
@@ -80,6 +81,8 @@ public class ReaderWriterTest extends EqualityTests {
         } catch (InvalidJsonFileException e) {
             fail("Invalid JSON File Exception");
         }
+
+        assertEquals(VALID_PATH, readerWriter.getPath());
     }
 
     @Test

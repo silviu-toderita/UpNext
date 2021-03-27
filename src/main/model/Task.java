@@ -139,23 +139,21 @@ public class Task implements Comparable<Task> {
         farAwayCal.add(Calendar.YEAR, 10);
         Date farAwayDate = farAwayCal.getTime();
 
+        Date thisDueDate;
         try {
-            return this.getDueDate().compareTo(o.getDueDate());
+            thisDueDate = this.getDueDate();
         } catch (NoDueDateException e) {
-            try {
-                if (!hasDueDate) {
-                    return farAwayDate.compareTo(o.getDueDate());
-                } else {
-                    return this.getDueDate().compareTo(farAwayDate);
-                }
-            } catch (NoDueDateException x) {
-                // Do nothing
-            }
-
+            thisDueDate = farAwayDate;
         }
 
-        return 0;
+        Date otherDueDate;
+        try {
+            otherDueDate = o.getDueDate();
+        } catch (NoDueDateException e) {
+            otherDueDate = farAwayDate;
+        }
 
+        return thisDueDate.compareTo(otherDueDate);
     }
 
     // EFFECTS: Returns this task's label
