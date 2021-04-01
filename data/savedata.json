@@ -3,6 +3,13 @@
         "hasDueDate": true,
         "month": 2,
         "year": 2021,
+        "label": "Do Something",
+        "day": 1
+    },
+    {
+        "hasDueDate": true,
+        "month": 2,
+        "year": 2021,
         "label": "CPSC 210: D6 Lecture Ticket",
         "day": 28
     },

@@ -84,6 +84,18 @@ public class TaskListTest extends EqualityTests {
     }
 
     @Test
+    public void testAddTaskDuplicate() {
+        try {
+            taskList.add(testTaskA);
+            taskList.add(testTaskB);
+            taskList.add(testTaskB);
+            fail("Expected DuplicateTaskException");
+        } catch (DuplicateTaskException e) {
+            assertEquals(2, taskList.size());
+        }
+    }
+
+    @Test
     public void testCompleteByIndexOnlyTask() {
         try {
             taskList.add(testTaskB);
@@ -569,18 +581,6 @@ public class TaskListTest extends EqualityTests {
         assertEqualTask(testTaskB, newTaskB);
         assertEqualTask(testTaskC, newTaskC);
 
-    }
-
-    @Test
-    public void testAddTaskDuplicate() {
-        try {
-            taskList.add(testTaskA);
-            taskList.add(testTaskB);
-            taskList.add(testTaskB);
-            fail("Expected DuplicateTaskException");
-        } catch (DuplicateTaskException e) {
-            assertEquals(2, taskList.size());
-        }
     }
 
 }

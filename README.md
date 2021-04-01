@@ -23,3 +23,15 @@ This project is interesting to me because chronological task-management has alwa
 - [com.diogonunes:JColor:5.0.1](https://github.com/dialex/JColor)
 - [org.json:20200518](https://github.com/stleary/JSON-java)
 - [com.toedter.calendar.JCalendar](https://toedter.com/jcalendar/)
+
+## Phase 4: Task 2
+
+For this task, I have made the *TaskList* class in the *main.model* package robust:
+- All of the methods in this class are robust:
+    - Each method has a specification that includes all possible input values to that method
+- The method *add(Task task)* in the *TaskList* class throws a new exception if the given *Task* is already in the TaskList: *DuplicateTaskException*
+    - This exception is defined in the *DuplicateTaskException* class of the *main.exceptions* package
+    - This exception extends *Exception*, making it a checked exception
+    - This exception is tested in the *TaskListTest* class of the *test.model* package:
+        - The method *testAddTaskEmptyList()* on line 42 does not expect a *DuplicateTaskException*, because a single *Task* is added to an empty *TaskList*
+        - The method *testAddTaskDuplicate()* on line 87 *does* expect a *DuplicateTaskException*, because the same *Task* is added to a *TaskList* twice

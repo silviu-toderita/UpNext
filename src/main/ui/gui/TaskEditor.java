@@ -40,8 +40,10 @@ public class TaskEditor {
             parent.setSaveStatus("Tasks Loaded!", Color.GREEN);
         } catch (IOException e) {
             parent.setSaveStatus("Unable to read from file: " + SAVE_DATA_PATH, Color.RED);
+            taskList = new TaskList();
         } catch (InvalidJsonFileException e) {
             parent.setSaveStatus("Invalid file: " + SAVE_DATA_PATH + ", Deleting...", Color.RED);
+            taskList = new TaskList();
         }
         return taskList;
     }
