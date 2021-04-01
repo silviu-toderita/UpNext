@@ -56,6 +56,7 @@ public class UpNext extends JFrame {
         setSaveStatus("Starting Application...", Color.YELLOW);
 
         editor = new TaskEditor(taskList, this);
+        taskList = new TaskList();
         taskList = editor.loadTasks();
 
         // Listener for window resizing

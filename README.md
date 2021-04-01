@@ -22,16 +22,39 @@ This project is interesting to me because chronological task-management has alwa
 
 - [com.diogonunes:JColor:5.0.1](https://github.com/dialex/JColor)
 - [org.json:20200518](https://github.com/stleary/JSON-java)
-- [com.toedter.calendar.JCalendar](https://toedter.com/jcalendar/)
+- [com.toedter.calendar.JCalendar:1.4](https://toedter.com/jcalendar/)
 
 ## Phase 4: Task 2
 
 For this task, I have made the *TaskList* class in the *main.model* package robust:
 - All of the methods in this class are robust:
     - Each method has a specification that includes all possible input values to that method
-- The method *add(Task task)* in the *TaskList* class throws a new exception if the given *Task* is already in the TaskList: *DuplicateTaskException*
+- The method *add(Task task)* in the *TaskList* class throws a new exception if the given *Task* is already in the *TaskList*: *DuplicateTaskException*
     - This exception is defined in the *DuplicateTaskException* class of the *main.exceptions* package
     - This exception extends *Exception*, making it a checked exception
     - This exception is tested in the *TaskListTest* class of the *test.model* package:
         - The method *testAddTaskEmptyList()* on line 42 does not expect a *DuplicateTaskException*, because a single *Task* is added to an empty *TaskList*
         - The method *testAddTaskDuplicate()* on line 87 *does* expect a *DuplicateTaskException*, because the same *Task* is added to a *TaskList* twice
+        
+## Phase 4: Task 3
+
+The UML Design Diagram highlights some issues in the application design:
+- There is too much coupling indicated by multiple associations with the *TaskList*, *Task*, and *TaskEditor* classes
+- There is not enough cohesion in the TaskVisualizer class as it must work with multiple data types internally
+- The console package is not used in any way
+
+With more time, the following refactoring would improve the application design:
+- Create a class hierarchy in the *ui* package that would include *TasksPane*, *TaskPanel*, *ChartPanel* and *Bar*
+    - This could be accomplished with an abstract class *UIElement* that would be extended by all of these classes
+    - This abstract class could contain duplicated code, such as:
+        - Fields containing *TaskList*, *Task*, and *TaskEditor*
+        - Fields containing other UI attributes such as background colours
+        - Methods for setting up UI elements
+    - This hierarchy would allow these classes to reduce coupling
+- Create another class called *TaskListVisualizer*, that would replace the functionality of *TaskVisualizer*
+    - *TaskVisualizer* could then be repurposed to represent a UI element for each *Task*
+    - *TaskListVisualizer* would continute to represent a UI element for a *TaskList*
+    - This would improve cohesion within the *console* package
+- Reintroduce the classes within the *console* package as associations of *UpNext*
+    - This would allow the app to be run in a console
+    - While this may be considered adding a new feature, virtually all of the code for this feature exists and it is only the association that is missing
