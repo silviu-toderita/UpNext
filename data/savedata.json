@@ -1,51 +1,37 @@
 [
     {
         "hasDueDate": true,
-        "month": 2,
+        "month": 3,
         "year": 2021,
-        "label": "Do Something",
-        "day": 1
-    },
-    {
-        "hasDueDate": true,
-        "month": 2,
-        "year": 2021,
-        "label": "CPSC 210: D6 Lecture Ticket",
-        "day": 28
-    },
-    {
-        "hasDueDate": true,
-        "month": 2,
-        "year": 2021,
-        "label": "CPSC 210: Project Phase 3",
-        "day": 28
-    },
-    {
-        "hasDueDate": true,
-        "month": 2,
-        "year": 2021,
-        "label": "CPEN: Readings for Monday",
-        "day": 29
-    },
-    {
-        "hasDueDate": true,
-        "month": 2,
-        "year": 2021,
-        "label": "COOP: Prep for Practice Interview",
-        "day": 30
-    },
-    {
-        "hasDueDate": true,
-        "month": 2,
-        "year": 2021,
-        "label": "ENGL: Peer Review of Formal Report",
-        "day": 31
+        "label": "CPSC 210: Phase 4",
+        "day": 7
     },
     {
         "hasDueDate": true,
         "month": 3,
         "year": 2021,
-        "label": "CPEN: Lab 5",
-        "day": 4
+        "label": "CPEN: Readings for Week 11",
+        "day": 8
+    },
+    {
+        "hasDueDate": true,
+        "month": 3,
+        "year": 2021,
+        "label": "CPSC 121: Pre-Lab 9",
+        "day": 8
+    },
+    {
+        "hasDueDate": true,
+        "month": 3,
+        "year": 2021,
+        "label": "ENGL: Formal Report (Final)",
+        "day": 8
+    },
+    {
+        "hasDueDate": true,
+        "month": 3,
+        "year": 2021,
+        "label": "CPSC 121: Assignment 4",
+        "day": 13
     }
 ]
