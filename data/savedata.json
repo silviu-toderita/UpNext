@@ -2,36 +2,8 @@
     {
         "hasDueDate": true,
         "month": 3,
-        "year": 2021,
-        "label": "CPSC 210: Phase 4",
+        "year": 2022,
+        "label": "Sample Task",
         "day": 7
-    },
-    {
-        "hasDueDate": true,
-        "month": 3,
-        "year": 2021,
-        "label": "CPEN: Readings for Week 11",
-        "day": 8
-    },
-    {
-        "hasDueDate": true,
-        "month": 3,
-        "year": 2021,
-        "label": "CPSC 121: Pre-Lab 9",
-        "day": 8
-    },
-    {
-        "hasDueDate": true,
-        "month": 3,
-        "year": 2021,
-        "label": "ENGL: Formal Report (Final)",
-        "day": 8
-    },
-    {
-        "hasDueDate": true,
-        "month": 3,
-        "year": 2021,
-        "label": "CPSC 121: Assignment 4",
-        "day": 13
     }
 ]
