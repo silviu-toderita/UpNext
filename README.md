@@ -11,7 +11,7 @@
 - Dynamically generated chronological chart allows the app to work at nearly any size
 - Autosave and autoload
 
-UpNext was written in Java for an Introduction to Software Construction course in the spring of 2021.
+UpNext was written in Java for an Introduction to Software Construction course in the spring of 2021. [Download it for Windows, MacOS or Linux here](https://github.com/silviu-toderita/UpNext/releases/).
 
 ## Dependencies
 
