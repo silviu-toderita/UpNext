@@ -4,6 +4,7 @@
 
 *Click to watch a preview*
 
+
 **UpNext** is a task management app that lets you **visualize time-sensitive tasks chronologically**. It emerged out of a need for the developer to keep track of all of his homework and personal projects based on due date, a feat that no other task management app could perform well. 
 
 ## Features
