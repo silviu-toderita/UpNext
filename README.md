@@ -2,6 +2,8 @@
 
 [![UpNext Video](https://raw.githubusercontent.com/silviu-toderita/UpNext/main/docs/video_prev.gif)](http://www.youtube.com/watch?v=LN5kQfPAD8w "UpNext - A Chronological Task Management App")
 
+^ *Video showing off app features - created for an in-class video competition* ^
+
 **UpNext** is a task management app that lets you **visualize time-sensitive tasks chronologically**. It emerged out of a need for the developer to keep track of all of his homework and personal projects based on due date, a feat that no other task management app could perform well. 
 
 ## Features
